@@ -1,0 +1,13 @@
+#!/bin/bash
+
+echo "
+#####################
+# run 00-repository #
+#####################
+"
+
+# update key brave browser
+curl -fsSLo /usr/share/keyrings/brave-browser-archive-keyring.gpg https://brave-browser-apt-release.s3.brave.com/brave-browser-archive-keyring.gpg
+
+apt-get update && apt-get upgrade -y
+apt autoremove -y

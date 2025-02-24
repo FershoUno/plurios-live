@@ -1,0 +1,47 @@
+#!/bin/bash
+
+set -e                  # exit on error
+set -o pipefail         # exit on pipeline error
+set -u                  # treat unset variable as error
+
+# === variables ===
+
+SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
+LIB_PLURIOS="lib/plurioslib"
+CONF_PLURIOS="config/plurios.conf"
+BOOT_ISOLINUX_PLURIOS="config/core/live.cfg"
+BOOT_GRUB_PLURIOS="config/core/grub.cfg"
+
+# === variables workspace ===
+WORKSPACE="workspace"
+ISO_DIR="$SCRIPT_DIR/$WORKSPACE/iso"
+MNT_DIR="$SCRIPT_DIR/$WORKSPACE/mnt"
+EXTRACT_DIR="$SCRIPT_DIR/$WORKSPACE/extract"
+CUSTOM_DIR="$SCRIPT_DIR/$WORKSPACE/custom"
+APT_DIR="$SCRIPT_DIR/apt-cache"
+
+# === load plurioslib ===
+. $CONF_PLURIOS || exit 1
+. $LIB_PLURIOS || exit 1
+
+# === main ===
+
+function run(){
+  get_content_iso
+  load_filesystem
+  repack_filesystem
+  build_iso
+}
+
+if [[ "$(whoami)" != "root" ]]
+then
+	echo "You need to run plurios-live as root"
+	exit 1
+fi
+
+
+#ISO_FILE=$1
+#echo "start: $(date)"
+#run
+#echo "end: $(date)"
+$1

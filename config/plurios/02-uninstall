@@ -1,0 +1,56 @@
+#!/bin/bash
+
+echo "
+####################
+# run 02-uninstall #
+####################
+"
+
+apt remove --purge --autoremove -y \
+	snapd \
+	brasero \
+	build-essential \
+	cheese \
+	clamav \
+	clamav-base \
+	clamav-freshclam \
+	clamtk \
+	clamtk-gnome \
+	clamdscan \
+	gedit \
+	gimp \
+	gnome-games \
+	gnome-2048 \
+	gnote \
+	goldendict \
+	inkscape \
+	joe \
+	vim-tiny \
+	hexchat \
+	shotwell \
+	gnome-mahjongg \
+	pidgin \
+	sound-juicer \
+	ufw \
+	gufw \
+	synaptic \
+	calamares \
+	calamares-settings-cinnamon-remix \
+	netplan.io
+
+apt remove -y \
+	hunspell-de-at-frami \
+	hunspell-de-ch-frami \
+	hunspell-de-de-frami \
+	hunspell-en-au \
+	hunspell-en-ca \
+	hunspell-en-gb \
+	hunspell-en-za \
+	hunspell-fr-classical \
+	hunspell-fr \
+	hunspell-it \
+	hunspell-pt-br \
+	hunspell-pt-pt \
+	hunspell-ru
+
+apt autoremove -y

@@ -1,0 +1,14 @@
+#!/bin/bash
+
+echo "
+##################
+# run 04-install #
+##################
+"
+
+apt-get install --install-recommends -y \
+        calamares \
+        calamares-settings-cinnamon-remix
+
+
+apt-get upgrade -y

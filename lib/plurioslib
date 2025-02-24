@@ -1,0 +1,184 @@
+#!/bin/bash
+
+function setup_workspace(){
+  mkdir -p $ISO_DIR $MNT_DIR $EXTRACT_DIR $CUSTOM_DIR $APT_DIR
+}
+
+function setup_isolinux_grub(){
+  rm -f $EXTRACT_DIR/isolinux/live.cfg
+  rm -f $EXTRACT_DIR/boot/grub/grub.cfg
+  cp $SCRIPT_DIR/$BOOT_ISOLINUX_PLURIOS $EXTRACT_DIR/isolinux/
+  cp $SCRIPT_DIR/$BOOT_GRUB_PLURIOS $EXTRACT_DIR/boot/grub/
+}
+
+
+
+function setup_chroot(){
+  mount --bind /dev $CUSTOM_DIR/dev
+  mount --bind /run $CUSTOM_DIR/run
+  chroot $CUSTOM_DIR mount none -t proc /proc
+  chroot $CUSTOM_DIR mount none -t sysfs /sys
+  chroot $CUSTOM_DIR mount none -t devpts /dev/pts
+}
+
+function run_chroot(){
+  chroot $CUSTOM_DIR bash -c 'for script in plurios/*; do bash "$script"; done'
+  chroot $CUSTOM_DIR bash -c 'rm -rf /plurios'
+}
+
+function mount_iso(){
+  mount -o loop $ISO_FILE $MNT_DIR
+}
+
+function umount_iso(){
+  umount $MNT_DIR
+}
+
+function mount_apt(){
+  mount --bind $APT_DIR $CUSTOM_DIR/var/cache/apt/archives
+}
+
+function umount_apt(){
+  umount $CUSTOM_DIR/var/cache/apt/archives
+}
+
+function umount_chroot(){
+  chroot $CUSTOM_DIR umount /proc
+  chroot $CUSTOM_DIR umount /sys
+  chroot $CUSTOM_DIR umount /dev/pts
+  umount -l $CUSTOM_DIR/dev
+  umount -l $CUSTOM_DIR/run
+}
+
+function copy_content_iso(){
+  rsync -a "$MNT_DIR"/ $EXTRACT_DIR
+}
+
+function backup_squashfs(){
+  if [ -f $EXTRACT_DIR/casper/filesystem.squashfs ]
+  then
+	mv $EXTRACT_DIR/casper/filesystem.squashfs $SCRIPT_DIR
+  fi
+}
+
+function extract_content_filesystem(){
+  if [ -f $SCRIPT_DIR/filesystem.squashfs ]
+  then
+ 	unsquashfs -f -d $CUSTOM_DIR $SCRIPT_DIR/filesystem.squashfs
+  elif [ -f $MNT_DIR/casper/filesystem.squashfs ]
+  then
+ 	backup_squashfs
+	extract_content_filesystem
+  fi
+}
+
+function compress_content_filesystem(){
+  mksquashfs $CUSTOM_DIR $EXTRACT_DIR/casper/filesystem.squashfs -comp zstd -b 1024K -always-use-fragments -noappend -quiet -progress
+}
+
+function copy_dir_scripts(){
+  cp -r $SCRIPT_DIR/config/plurios $CUSTOM_DIR/
+}
+
+function generate_iso(){
+
+  xorriso -as mkisofs -iso-level 3 \
+	-o $ISO_DIR/$NAME_ISO-$VARIANT_ISO-$VERSION_ISO-$ARCH_ISO.iso \
+	-J -joliet-long \
+	-r \
+	-V "$NAME_ISO" \
+	-b isolinux/isolinux.bin \
+	-c isolinux/boot.cat \
+	-no-emul-boot \
+	-boot-load-size 4 \
+	-boot-info-table \
+	--eltorito-alt-boot \
+	-e boot/grub/efi.img \
+	-no-emul-boot \
+	-isohybrid-gpt-basdat "$EXTRACT_DIR"
+
+
+#xorriso -as mkisofs \
+#    -iso-level 3 \
+#    -o "$ISO_DIR/$NAME_ISO-$VARIANT_ISO-$VERSION_ISO-$ARCH_ISO.iso" \
+#    -J -joliet-long \
+#    -r \
+#    -V "$NAME_ISO" \
+#    -b isolinux/isolinux.bin \
+#    -c isolinux/boot.cat \
+#    -no-emul-boot \
+#    -boot-load-size 4 \
+#    -boot-info-table \
+#    --eltorito-alt-boot \
+#    -e EFI/boot/bootx64.efi \
+#    -no-emul-boot \
+#    -isohybrid-gpt-basdat \
+#    -isohybrid-mbr /usr/lib/ISOLINUX/isohdpfx.bin \
+#    -partition_offset 16 \
+#    "$EXTRACT_DIR"
+
+#xorriso -as mkisofs \
+#    -iso-level 3 \
+#    -o "$ISO_DIR/$NAME_ISO-$VARIANT_ISO-$VERSION_ISO-$ARCH_ISO.iso" \
+#    -J -joliet-long \
+#    -r \
+#    -V "$NAME_ISO" \
+#    -b isolinux/isolinux.bin \
+#    -c isolinux/boot.cat \
+#    -no-emul-boot \
+#    -boot-load-size 4 \
+#    -boot-info-table \
+#    --eltorito-alt-boot \
+#    -e boot/grub/efi.img \
+#    -no-emul-boot \
+#    -isohybrid-gpt-basdat \
+#    -isohybrid-mbr /usr/lib/ISOLINUX/isohdpfx.bin \
+#    -partition_offset 16 \
+#    "$EXTRACT_DIR"
+}
+
+function update_vmlinuz(){
+  rm -f $EXTRACT_DIR/boot/initrd.img
+  rm -f $EXTRACT_DIR/boot/vmlinuz
+  rm -f $EXTRACT_DIR/live/vmlinuz
+  rm -f $EXTRACT_DIR/casper/initrd.img
+  rm -f $EXTRACT_DIR/casper/vmlinuz
+
+  cp $CUSTOM_DIR/boot/initrd.img $EXTRACT_DIR/boot/
+  cp $CUSTOM_DIR/boot/initrd.img $EXTRACT_DIR/casper/
+
+  cp $CUSTOM_DIR/boot/vmlinuz $EXTRACT_DIR/boot/
+  cp $CUSTOM_DIR/boot/vmlinuz $EXTRACT_DIR/live/
+  cp $CUSTOM_DIR/boot/vmlinuz $EXTRACT_DIR/casper/
+}
+
+
+# ======= functions ======
+
+function get_content_iso(){
+  setup_workspace
+  mount_iso
+  copy_content_iso
+}
+
+function load_filesystem(){
+  backup_squashfs
+  extract_content_filesystem
+  setup_isolinux_grub
+  setup_chroot
+  mount_apt
+  copy_dir_scripts
+  run_chroot
+}
+
+function repack_filesystem(){
+  umount_apt
+  umount_chroot
+  umount_iso
+  update_vmlinuz
+  compress_content_filesystem
+}
+
+function build_iso(){
+  generate_iso
+}

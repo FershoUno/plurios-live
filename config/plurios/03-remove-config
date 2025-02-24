@@ -1,0 +1,24 @@
+#!/bin/bash
+
+echo "
+########################
+# run 03-remove-config #
+########################
+"
+echo "remove dir lighttpd.."
+rm -rf /etc/lighttpd
+
+echo "remove home cinnamonremix.."
+rm -rf /home/ubuntucinnamonremix
+
+echo "remove directory gedit.."
+rm -rf usr/lib/x86_64-linux-gnu/gedit/
+
+echo "remove directory netplan.."
+rm -rf /etc/netplan
+
+
+echo "remove service snapd.app-prompt-listener.."
+systemctl disable snapd.aa-prompt-listener
+rm -f /lib/systemd/system/snapd.aa-prompt-listener.service
+

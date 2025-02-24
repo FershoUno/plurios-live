@@ -1,0 +1,35 @@
+#!/bin/bash
+
+
+echo "
+########################
+# run 05-configuration #
+########################
+"
+
+# delete configuration before_bootloadder_context
+#rm -rf /etc/calamares/modules/before_bootloader_context.conf
+
+# disable repository CD-ROM
+#sed -i '/- id: before_bootloader_mkdirs/{N;N;d;}' /etc/calamares/settings.conf
+#sed -i '/- id: before_bootloader/{N;N;d;}' /etc/calamares/settings.conf
+#sed -i '/- id: after_bootloader/{N;N;d;}' /etc/calamares/settings.conf
+
+# remove try_install
+sed -i '/- try_install:/,/^  - /d' /etc/calamares/modules/packages.conf
+
+# password policy
+sed -i 's/minLength: 0/minLength: 8/' /etc/calamares/modules/users.conf
+sed -i 's/maxLength: 0/maxLength: 12/' /etc/calamares/modules/users.conf
+
+# set Geo
+sed -i 's/zone: "New_York"/zone: "La_Paz"/' /etc/calamares/modules/locale.conf
+
+# set storage and RAM
+sed -i 's/requiredStorage: *16/requiredStorage:    60/' /etc/calamares/modules/welcome.conf
+sed -i 's/requiredRam: *2.0/requiredRam:    4.0/' /etc/calamares/modules/welcome.conf
+
+# remove apt_cdrom
+rm -f /usr/share/initramfs-tools/scripts/casper-bottom/41apt_cdrom
+update-initramfs -u
+

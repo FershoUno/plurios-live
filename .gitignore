@@ -1,0 +1,4 @@
+apt-cache
+*.iso
+*.squashfs
+workspace
