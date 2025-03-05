@@ -51,6 +51,10 @@ apt remove -y \
 	hunspell-it \
 	hunspell-pt-br \
 	hunspell-pt-pt \
-	hunspell-ru
+	hunspell-ru 
+
+apt remove --purge --autoremove	-y \
+	libreoffice-gtk \
+	libreoffice-gtk2
 
 apt autoremove -y

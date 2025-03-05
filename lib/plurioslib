@@ -11,8 +11,6 @@ function setup_isolinux_grub(){
   cp $SCRIPT_DIR/$BOOT_GRUB_PLURIOS $EXTRACT_DIR/boot/grub/
 }
 
-
-
 function setup_chroot(){
   mount --bind /dev $CUSTOM_DIR/dev
   mount --bind /run $CUSTOM_DIR/run
@@ -73,11 +71,22 @@ function extract_content_filesystem(){
 }
 
 function compress_content_filesystem(){
-  mksquashfs $CUSTOM_DIR $EXTRACT_DIR/casper/filesystem.squashfs -comp zstd -b 1024K -always-use-fragments -noappend -quiet -progress
+  mksquashfs $CUSTOM_DIR $EXTRACT_DIR/casper/filesystem.squashfs -comp $COMPRESSION -b 1024K -always-use-fragments -noappend -quiet -progress
 }
 
 function copy_dir_scripts(){
   cp -r $SCRIPT_DIR/config/plurios $CUSTOM_DIR/
+}
+
+function copy_branding_calamares(){
+  rm -rf $CUSTOM_DIR/etc/calamares/branding
+  cp -r $SCRIPT_DIR/config/core/branding $CUSTOM_DIR/etc/calamares/
+  sed -i "s/PLURIOS_TITLE_INSTALLER/$PLURIOS_TITLE_INSTALLER/g" $CUSTOM_DIR/etc/calamares/branding/cinnamon-remix/branding.desc
+  sed -i "s/PLURIOS_HELP_INSTALLER/$PLURIOS_HELP_INSTALLER/g" $CUSTOM_DIR/etc/calamares/branding/cinnamon-remix/branding.desc
+  sed -i "s/PLURIOS_VERSION_INSTALLER/$PLURIOS_VERSION_INSTALLER/g" $CUSTOM_DIR/etc/calamares/branding/cinnamon-remix/branding.desc
+  sed -i "s/PLURIOS_TITLE_CENTER_INSTALLER/$PLURIOS_TITLE_CENTER_INSTALLER/g" $CUSTOM_DIR/etc/calamares/branding/cinnamon-remix/branding.desc
+  sed -i "s/PLURIOS_SHORT_VERSION_NAME_INSTALLER/$PLURIOS_SHORT_VERSION_NAME_INSTALLER/g" $CUSTOM_DIR/etc/calamares/branding/cinnamon-remix/branding.desc
+  sed -i "s#PLURIOS_URL_ALL_INSTALLER#$PLURIOS_URL_ALL_INSTALLER#g" $CUSTOM_DIR/etc/calamares/branding/cinnamon-remix/branding.desc
 }
 
 function generate_iso(){
@@ -173,6 +182,7 @@ function load_filesystem(){
 
 function repack_filesystem(){
   umount_apt
+  copy_branding_calamares
   umount_chroot
   umount_iso
   update_vmlinuz

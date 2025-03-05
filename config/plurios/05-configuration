@@ -25,11 +25,31 @@ sed -i 's/maxLength: 0/maxLength: 12/' /etc/calamares/modules/users.conf
 # set Geo
 sed -i 's/zone: "New_York"/zone: "La_Paz"/' /etc/calamares/modules/locale.conf
 
-# set storage and RAM
+# set storage and RAM and Internet
 sed -i 's/requiredStorage: *16/requiredStorage:    60/' /etc/calamares/modules/welcome.conf
 sed -i 's/requiredRam: *2.0/requiredRam:    4.0/' /etc/calamares/modules/welcome.conf
+sed -i '/- internet/d; /internetCheckUrl:/d' /etc/calamares/modules/welcome.conf
+
+
+# Add swapfile
+#sed -i 's/userSwapChoices: none/userSwapChoices: file/' /etc/calamares/modules/partition.conf
+
+# Add Swap options on Automatic Partition Option
+cat <<EOF > /etc/calamares/modules/partition.conf
+efiSystemPartition: "/boot/efi"
+enableLuksAutomatedPartitioning: true
+drawNestedPartitions: true
+defaultFileSystemType: "ext4"
+userSwapChoices:
+  - none
+  - suspend
+  - small
+EOF
 
 # remove apt_cdrom
 rm -f /usr/share/initramfs-tools/scripts/casper-bottom/41apt_cdrom
 update-initramfs -u
+
+# remove snapd on environment file
+sed -i 's#:\/snap/bin##' /etc/environment
 

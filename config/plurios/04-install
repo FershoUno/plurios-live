@@ -6,9 +6,12 @@ echo "
 ##################
 "
 
+sudo apt-get --with-new-pkgs upgrade -y
+
 apt-get install --install-recommends -y \
         calamares \
         calamares-settings-cinnamon-remix
 
+sudo apt-get --with-new-pkgs upgrade -y
 
 apt-get upgrade -y

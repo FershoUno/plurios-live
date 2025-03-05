@@ -17,8 +17,13 @@ rm -rf usr/lib/x86_64-linux-gnu/gedit/
 echo "remove directory netplan.."
 rm -rf /etc/netplan
 
-
 echo "remove service snapd.app-prompt-listener.."
 systemctl disable snapd.aa-prompt-listener
 rm -f /lib/systemd/system/snapd.aa-prompt-listener.service
 
+# remove snapd on environment file
+sed -i 's#:\/snap/bin##' /etc/environment
+
+# remove old sources.list*
+rm -f /etc/apt/sources.list~ 2>/dev/null
+rm -f /etc/apt/sources.list.save 2>/dev/null
