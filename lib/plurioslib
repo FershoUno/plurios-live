@@ -55,23 +55,27 @@ function copy_content_iso(){
 function backup_squashfs(){
   if [ -f $EXTRACT_DIR/casper/filesystem.squashfs ]
   then
-	mv $EXTRACT_DIR/casper/filesystem.squashfs $SCRIPT_DIR
+	mv $EXTRACT_DIR/casper/filesystem.squashfs $SCRIPT_DIR/$WORKSPACE
   fi
 }
 
 function extract_content_filesystem(){
-  if [ -f $SCRIPT_DIR/filesystem.squashfs ]
-  then
- 	unsquashfs -f -d $CUSTOM_DIR $SCRIPT_DIR/filesystem.squashfs
-  elif [ -f $MNT_DIR/casper/filesystem.squashfs ]
-  then
- 	backup_squashfs
-	extract_content_filesystem
-  fi
+
+unsquashfs -f -d $CUSTOM_DIR $EXTRACT_DIR/casper/filesystem.squashfs
+rm -f $EXTRACT_DIR/casper/filesystem.squashfs
+
+#  if [ -f $SCRIPT_DIR/filesystem.squashfs ]
+#  then
+# 	unsquashfs -f -d $CUSTOM_DIR $SCRIPT_DIR/filesystem.squashfs
+#  elif [ -f $MNT_DIR/casper/filesystem.squashfs ]
+#  then
+# 	backup_squashfs
+#	extract_content_filesystem
+#  fi
 }
 
 function compress_content_filesystem(){
-  mksquashfs $CUSTOM_DIR $EXTRACT_DIR/casper/filesystem.squashfs -comp $COMPRESSION -b 1024K -always-use-fragments -noappend -quiet -progress
+  mksquashfs $CUSTOM_DIR $EXTRACT_DIR/casper/filesystem.squashfs -comp $COMPRESSION -Xcompression-level 19 -b 1024K -always-use-fragments -noappend -quiet -progress
 }
 
 function copy_dir_scripts(){
@@ -89,8 +93,38 @@ function copy_branding_calamares(){
   sed -i "s#PLURIOS_URL_ALL_INSTALLER#$PLURIOS_URL_ALL_INSTALLER#g" $CUSTOM_DIR/etc/calamares/branding/cinnamon-remix/branding.desc
 }
 
-function generate_iso(){
+function calculate_filesystem_size(){
+  du -sx --block-size=1 $EXTRACT_DIR/casper/filesystem.squashfs | cut -f1 > $EXTRACT_DIR/casper/filesystem.size
+}
 
+function replace_the_filesystem_manifes_file(){
+  rm -f $EXTRACT_DIR/casper/filesystem.manifest
+  mv $CUSTOM_DIR/filesystem.manifest $EXTRACT_DIR
+}
+
+function update_vmlinuz(){
+  rm -f $EXTRACT_DIR/boot/initrd.img
+  rm -f $EXTRACT_DIR/boot/vmlinuz
+  rm -f $EXTRACT_DIR/live/vmlinuz
+  rm -f $EXTRACT_DIR/casper/initrd.img
+  rm -f $EXTRACT_DIR/casper/vmlinuz
+
+  cp $CUSTOM_DIR/boot/initrd.img $EXTRACT_DIR/boot/
+  cp $CUSTOM_DIR/boot/initrd.img $EXTRACT_DIR/casper/
+
+  cp $CUSTOM_DIR/boot/vmlinuz $EXTRACT_DIR/boot/
+  cp $CUSTOM_DIR/boot/vmlinuz $EXTRACT_DIR/live/
+  cp $CUSTOM_DIR/boot/vmlinuz $EXTRACT_DIR/casper/
+}
+
+function config_disk(){
+  echo "PluriOS $VARIANT_ISO $VERSION_ISO" > $EXTRACT_DIR/.disk/info
+  echo "$URL_SUPPORT" > $EXTRACT_DIR/.disk/release_notes_url
+  # remove mkisofs file
+  rm -f $EXTRACT_DIR/.disk/mkisofs
+}
+
+function generate_iso(){
   xorriso -as mkisofs -iso-level 3 \
 	-o $ISO_DIR/$NAME_ISO-$VARIANT_ISO-$VERSION_ISO-$ARCH_ISO.iso \
 	-J -joliet-long \
@@ -105,7 +139,6 @@ function generate_iso(){
 	-e boot/grub/efi.img \
 	-no-emul-boot \
 	-isohybrid-gpt-basdat "$EXTRACT_DIR"
-
 
 #xorriso -as mkisofs \
 #    -iso-level 3 \
@@ -146,21 +179,6 @@ function generate_iso(){
 #    "$EXTRACT_DIR"
 }
 
-function update_vmlinuz(){
-  rm -f $EXTRACT_DIR/boot/initrd.img
-  rm -f $EXTRACT_DIR/boot/vmlinuz
-  rm -f $EXTRACT_DIR/live/vmlinuz
-  rm -f $EXTRACT_DIR/casper/initrd.img
-  rm -f $EXTRACT_DIR/casper/vmlinuz
-
-  cp $CUSTOM_DIR/boot/initrd.img $EXTRACT_DIR/boot/
-  cp $CUSTOM_DIR/boot/initrd.img $EXTRACT_DIR/casper/
-
-  cp $CUSTOM_DIR/boot/vmlinuz $EXTRACT_DIR/boot/
-  cp $CUSTOM_DIR/boot/vmlinuz $EXTRACT_DIR/live/
-  cp $CUSTOM_DIR/boot/vmlinuz $EXTRACT_DIR/casper/
-}
-
 
 # ======= functions ======
 
@@ -187,6 +205,9 @@ function repack_filesystem(){
   umount_iso
   update_vmlinuz
   compress_content_filesystem
+  calculate_filesystem_size
+  replace_the_filesystem_manifes_file
+  config_disk
 }
 
 function build_iso(){

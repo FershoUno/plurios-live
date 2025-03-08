@@ -23,3 +23,8 @@ export BUILD_SYSTEM="Ubuntu"
 
 # export FLAVOUR="Ubuntu"
 EOF
+
+
+# Generate filesystem.manifest
+
+dpkg-query -W --showformat='${Package} ${Version}\n' > /root/filesystem.manifest

@@ -1,0 +1,11 @@
+#!/bin/bash
+
+echo "
+#################
+# run 99-finish #
+#################
+
+
+# Generate filesystem.manifest
+dpkg-query -W --showformat='${Package} ${Version}\n' > /filesystem.manifest
+
