@@ -99,7 +99,7 @@ function calculate_filesystem_size(){
 
 function replace_the_filesystem_manifes_file(){
   rm -f $EXTRACT_DIR/casper/filesystem.manifest
-  mv $CUSTOM_DIR/filesystem.manifest $EXTRACT_DIR
+  mv $CUSTOM_DIR/filesystem.manifest $EXTRACT_DIR/casper/
 }
 
 function update_vmlinuz(){
