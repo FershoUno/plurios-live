@@ -27,3 +27,6 @@ sed -i 's#:\/snap/bin##' /etc/environment
 # remove old sources.list*
 rm -f /etc/apt/sources.list~ 2>/dev/null
 rm -f /etc/apt/sources.list.save 2>/dev/null
+
+# remove 20apt-esm-hook.conf
+rm -f /etc/apt/apt.conf.d/20apt-esm-hook.conf

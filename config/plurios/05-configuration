@@ -12,8 +12,13 @@ echo "
 
 # disable repository CD-ROM
 #sed -i '/- id: before_bootloader_mkdirs/{N;N;d;}' /etc/calamares/settings.conf
-#sed -i '/- id: before_bootloader/{N;N;d;}' /etc/calamares/settings.conf
 #sed -i '/- id: after_bootloader/{N;N;d;}' /etc/calamares/settings.conf
+#sed -i '/- id: before_bootloader/{N;N;d;}' /etc/calamares/settings.conf
+sed -i '/^\s*- contextualprocess@before_bootloader$/d' /etc/calamares/settings.conf
+#sed -i '/^\s*- contextualprocess@before_bootloader_mkdirs$/d' /etc/calamares/settings.conf
+
+# Remove automirror
+sed -i '/^\s*- automirror$/d' /etc/calamares/settings.conf
 
 # remove try_install
 sed -i '/- try_install:/,/^  - /d' /etc/calamares/modules/packages.conf
@@ -47,8 +52,8 @@ userSwapChoices:
 EOF
 
 # remove apt_cdrom
-rm -f /usr/share/initramfs-tools/scripts/casper-bottom/41apt_cdrom
-update-initramfs -u
+#rm -f /usr/share/initramfs-tools/scripts/casper-bottom/41apt_cdrom
+#update-initramfs -u
 
 # remove snapd on environment file
 sed -i 's#:\/snap/bin##' /etc/environment
