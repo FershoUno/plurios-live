@@ -45,13 +45,6 @@ function copy_content_iso(){
   rsync -a "$MNT_DIR"/ $EXTRACT_DIR
 }
 
-#function backup_squashfs(){
-#  if [ -f $EXTRACT_DIR/casper/filesystem.squashfs ]
-#  then
-#	mv $EXTRACT_DIR/casper/filesystem.squashfs $SCRIPT_DIR/$WORKSPACE
-#  fi
-#}
-
 function extract_content_filesystem(){
   unsquashfs -f -d $CUSTOM_DIR $EXTRACT_DIR/casper/filesystem.squashfs
   rm -f $EXTRACT_DIR/casper/filesystem.squashfs
@@ -158,12 +151,13 @@ function load_filesystem(){
 function repack_filesystem(){
   umount_apt
   copy_branding_calamares
+  replace_the_filesystem_manifes_file
   umount_chroot
   umount_iso
   update_vmlinuz
   compress_content_filesystem
   calculate_filesystem_size
-  replace_the_filesystem_manifes_file
+
   config_disk
 }
 

@@ -1,4 +1,4 @@
-#!/bin/bash
+  #!/bin/bash
 
 
 echo "
@@ -58,3 +58,5 @@ EOF
 # remove snapd on environment file
 sed -i 's#:\/snap/bin##' /etc/environment
 
+# configure lsb-release
+sed -i 's|^DISTRIB_DESCRIPTION=.*|DISTRIB_DESCRIPTION="PluriOS Metadistro Linux Boliviana"|' /etc/lsb-release

@@ -5,6 +5,8 @@ echo "
 # run 99-finish #
 #################
 "
+# remove 20apt-esm-hook.conf
+rm -f /etc/apt/apt.conf.d/20apt-esm-hook.conf
 
 # Generate filesystem.manifest
 dpkg-query -W --showformat='${Package} ${Version}\n' > /filesystem.manifest
