@@ -8,6 +8,9 @@ echo "
 # remove 20apt-esm-hook.conf
 rm -f /etc/apt/apt.conf.d/20apt-esm-hook.conf
 
+# delete list packages 
+rm -rf /var/lib/apt/lists/*
+
 # Generate filesystem.manifest
 dpkg-query -W --showformat='${Package} ${Version}\n' > /filesystem.manifest
 
