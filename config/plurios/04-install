@@ -5,15 +5,44 @@ echo "
 # run 04-install #
 ##################
 "
+apt-get update
+#apt-get --with-new-pkgs upgrade -y
 
-sudo apt-get --with-new-pkgs upgrade -y
+## Install NetworkManager
+#apt-get install -y network-manager
 
-apt-get install --install-recommends -y \
-        calamares \
-        calamares-settings-cinnamon-remix
+# Install Grub efi signed, etc
+apt-get install -y \
+	grub-common \
+	grub-gfxpayload-lists \
+	grub-pc \
+	grub-pc-bin \
+	grub2 \
+	grub-efi-amd64-signed \
+	shim-signed
 
-sudo apt-get --with-new-pkgs upgrade -y
+# Install live tools
+apt-get install -y \
+	casper \
+	live-boot \
+	live-tools
 
+# Install calamares
+apt-get install --install-recommends -y calamares-settings-ubuntu-unity
+
+# Install Firefox
+apt-get install -y firefox firefox-l10n-es-mx
+
+# Utils
+apt-get -y install \
+	htop \
+	terminator
+
+update-initramfs -c -k $(ls /lib/modules)
+
+# Upgrade
+# apt-get --with-new-pkgs upgrade -y
 apt-get upgrade -y
-
 apt autoremove -y
+
+

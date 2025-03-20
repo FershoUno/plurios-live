@@ -1,4 +1,6 @@
 apt-cache
 *.iso
 *.squashfs
+*.tar.gz
 workspace
+config/core/

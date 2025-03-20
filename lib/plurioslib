@@ -1,10 +1,10 @@
 #!/bin/bash
 
 function setup_workspace(){
-  mkdir -p $ISO_DIR $MNT_DIR $EXTRACT_DIR $CUSTOM_DIR $APT_DIR
+  mkdir -p $MNT_DIR $EXTRACT_DIR $CUSTOM_DIR $APT_DIR
 }
 
-function setup_chroot(){
+function mount_chroot(){
   mount --bind /dev $CUSTOM_DIR/dev
   mount --bind /run $CUSTOM_DIR/run
   chroot $CUSTOM_DIR mount none -t proc /proc
@@ -21,8 +21,10 @@ function umount_chroot(){
 }
 
 function run_chroot(){
-  chroot $CUSTOM_DIR bash -c 'for script in plurios/*; do bash "$script"; done'
+  chroot $CUSTOM_DIR bash -c 'for script in plurios/*; do bash -x "$script"; done'
   chroot $CUSTOM_DIR bash -c 'rm -rf /plurios'
+  chroot $CUSTOM_DIR bash -c 'bash -x /prepare'
+  chroot $CUSTOM_DIR bash -c 'rm -rf /prepare'
 }
 
 function mount_iso(){
@@ -45,89 +47,149 @@ function copy_content_iso(){
   rsync -a "$MNT_DIR"/ $EXTRACT_DIR
 }
 
+function extract(){
+  unsquashfs -f -d $CUSTOM_DIR $EXTRACT_DIR/casper/$1
+}
+
 function extract_content_filesystem(){
-  unsquashfs -f -d $CUSTOM_DIR $EXTRACT_DIR/casper/filesystem.squashfs
-  rm -f $EXTRACT_DIR/casper/filesystem.squashfs
+  extract "minimal.squashfs"
 }
 
 function compress_content_filesystem(){
-  mksquashfs $CUSTOM_DIR $EXTRACT_DIR/casper/filesystem.squashfs -comp $COMPRESSION -Xcompression-level 19 -b 1024K -always-use-fragments -noappend -quiet -progress
+  mv $CUSTOM_DIR/image $SCRIPT_DIR/$WORKSPACE/
+  mv $CUSTOM_DIR/filesystem.manifest $IMAGE_DIR/casper/
+  rmdir $CUSTOM_DIR/{bin.usr-is-merged,lib.usr-is-merged,sbin.usr-is-merged}
+
+ mksquashfs $CUSTOM_DIR $IMAGE_DIR/casper/filesystem.squashfs -comp $COMPRESSION \
+	-Xcompression-level 19 -b 1024K -always-use-fragments -noappend -quiet -progress \
+        -e "var/cache/apt/archives/*" \
+        -e "root/*" \
+        -e "root/.*" \
+        -e "tmp/*" \
+        -e "tmp/.*" \
+        -e "swapfile"
+
+#mksquashfs $CUSTOM_DIR $IMAGE_DIR/casper/filesystem.squashfs -noappend -no-duplicates -no-recovery -wildcards -comp $COMPRESSION -b 1M -Xcompression-level 19 -quiet -progress \
+#        -e "var/cache/apt/archives/*" \
+#        -e "root/*" \
+#        -e "root/.*" \
+#        -e "tmp/*" \
+#        -e "tmp/.*" \
+#        -e "swapfile"
 }
 
 function copy_dir_scripts(){
-  cp -r $SCRIPT_DIR/config/plurios $CUSTOM_DIR/
+  cp -r $SCRIPT_DIR/$DIR_CONF_PLURIOS $CUSTOM_DIR/
+  cp $SCRIPT_DIR/$CONF_PREPARE_ISO $CUSTOM_DIR/
+  cp -r $SCRIPT_DIR/$DIR_CONF_IMAGE $CUSTOM_DIR/
 }
 
-function copy_branding_calamares(){
-  rm -rf $CUSTOM_DIR/etc/calamares/branding
-  cp -r $SCRIPT_DIR/config/core/branding $CUSTOM_DIR/etc/calamares/
-  sed -i "s/PLURIOS_TITLE_INSTALLER/$PLURIOS_TITLE_INSTALLER/g" $CUSTOM_DIR/etc/calamares/branding/cinnamon-remix/branding.desc
-  sed -i "s/PLURIOS_HELP_INSTALLER/$PLURIOS_HELP_INSTALLER/g" $CUSTOM_DIR/etc/calamares/branding/cinnamon-remix/branding.desc
-  sed -i "s/PLURIOS_VERSION_INSTALLER/$PLURIOS_VERSION_INSTALLER/g" $CUSTOM_DIR/etc/calamares/branding/cinnamon-remix/branding.desc
-  sed -i "s/PLURIOS_TITLE_CENTER_INSTALLER/$PLURIOS_TITLE_CENTER_INSTALLER/g" $CUSTOM_DIR/etc/calamares/branding/cinnamon-remix/branding.desc
-  sed -i "s/PLURIOS_SHORT_VERSION_NAME_INSTALLER/$PLURIOS_SHORT_VERSION_NAME_INSTALLER/g" $CUSTOM_DIR/etc/calamares/branding/cinnamon-remix/branding.desc
-  sed -i "s#PLURIOS_URL_ALL_INSTALLER#$PLURIOS_URL_ALL_INSTALLER#g" $CUSTOM_DIR/etc/calamares/branding/cinnamon-remix/branding.desc
-}
+#function copy_branding_calamares(){
+#  rm -rf $CUSTOM_DIR/etc/calamares/branding
+#  cp -r $SCRIPT_DIR/config/core/branding $CUSTOM_DIR/etc/calamares/
+#  sed -i "s/PLURIOS_TITLE_INSTALLER/$PLURIOS_TITLE_INSTALLER/g" $CUSTOM_DIR/etc/calamares/branding/ubuntuunity/branding.desc
+#  sed -i "s/PLURIOS_HELP_INSTALLER/$PLURIOS_HELP_INSTALLER/g" $CUSTOM_DIR/etc/calamares/branding/ubuntuunity/branding.desc
+#  sed -i "s/PLURIOS_VERSION_INSTALLER/$PLURIOS_VERSION_INSTALLER/g" $CUSTOM_DIR/etc/calamares/branding/ubuntuunity/branding.desc
+#  sed -i "s/PLURIOS_TITLE_CENTER_INSTALLER/$PLURIOS_TITLE_CENTER_INSTALLER/g" $CUSTOM_DIR/etc/calamares/branding/ubuntuunity/branding.desc
+#  sed -i "s/PLURIOS_SHORT_VERSION_NAME_INSTALLER/$PLURIOS_SHORT_VERSION_NAME_INSTALLER/g" $CUSTOM_DIR/etc/calamares/branding/ubuntuunity/branding.desc
+#  sed -i "s#PLURIOS_URL_ALL_INSTALLER#$PLURIOS_URL_ALL_INSTALLER#g" $CUSTOM_DIR/etc/calamares/branding/ubuntuunity/branding.desc
+#}
 
-function setup_isolinux_grub(){
-  rm -f $EXTRACT_DIR/isolinux/live.cfg
-  rm -f $EXTRACT_DIR/boot/grub/grub.cfg
-  cp $SCRIPT_DIR/$BOOT_ISOLINUX_PLURIOS $EXTRACT_DIR/isolinux/
-  cp $SCRIPT_DIR/$BOOT_GRUB_PLURIOS $EXTRACT_DIR/boot/grub/
+function copy_calamares(){
+  rm -rf $CUSTOM_DIR/etc/calamares/
+  cp -r $SCRIPT_DIR/$DIR_CONF_CALAMARES/$DIR_CALAMARES/calamares $CUSTOM_DIR/etc/
 }
 
 function calculate_filesystem_size(){
-  du -sx --block-size=1 $EXTRACT_DIR/casper/filesystem.squashfs | cut -f1 > $EXTRACT_DIR/casper/filesystem.size
-}
-
-function replace_the_filesystem_manifes_file(){
-  rm -f $EXTRACT_DIR/casper/filesystem.manifest
-  mv $CUSTOM_DIR/filesystem.manifest $EXTRACT_DIR/casper/
-}
-
-function update_vmlinuz(){
-  rm -f $EXTRACT_DIR/boot/initrd.img
-  rm -f $EXTRACT_DIR/boot/vmlinuz
-  rm -f $EXTRACT_DIR/live/vmlinuz
-  rm -f $EXTRACT_DIR/casper/initrd.img
-  rm -f $EXTRACT_DIR/casper/vmlinuz
-
-  cp $CUSTOM_DIR/boot/initrd.img $EXTRACT_DIR/boot/
-  cp $CUSTOM_DIR/boot/initrd.img $EXTRACT_DIR/casper/
-
-  cp $CUSTOM_DIR/boot/vmlinuz $EXTRACT_DIR/boot/
-  cp $CUSTOM_DIR/boot/vmlinuz $EXTRACT_DIR/live/
-  cp $CUSTOM_DIR/boot/vmlinuz $EXTRACT_DIR/casper/
+  du -sx --block-size=1 $IMAGE_DIR/casper/filesystem.squashfs | cut -f1 > $IMAGE_DIR/casper/filesystem.size
 }
 
 function config_disk(){
-  echo "PluriOS $VARIANT_ISO $VERSION_ISO" > $EXTRACT_DIR/.disk/info
-  echo "$URL_SUPPORT" > $EXTRACT_DIR/.disk/release_notes_url
-  echo '#define DISKNAME  plurios "Metadistro Boliviana PluriOS"' > $EXTRACT_DIR/README.diskdefines
-  echo 'plurios "Metadistro Boliviana PluriOS"'  > $EXTRACT_DIR/.disk/info
+   sed -i "s/DISC_LABEL_NAME/$DISC_LABEL_NAME/g" $IMAGE_DIR/README.diskdefines
 
-  # remove mkisofs file
-  rm -f $EXTRACT_DIR/.disk/mkisofs
+   # create EFIBOOT
+   mkdir -p $IMAGE_DIR/EFI/BOOT
+   cp $IMAGE_DIR/isolinux/bootx64.efi $IMAGE_DIR/EFI/BOOT
+   cp $IMAGE_DIR/isolinux/grubx64.efi $IMAGE_DIR/EFI/BOOT
+   
+   rm -f $IMAGE_DIR/isolinux/efiboot.img
+   truncate -s 40M $IMAGE_DIR/isolinux/efiboot.img
+   mkfs.vfat -n "EFIBOOT" $IMAGE_DIR/isolinux/efiboot.img
+   mkdir -p $IMAGE_DIR/mnt_efiboot
+   mount -o loop $IMAGE_DIR/isolinux/efiboot.img $IMAGE_DIR/mnt_efiboot
 
-  # remove packages from iso
-  rm -rf $EXTRACT_DIR/{pool,preseed,dists}
+   mkdir -p $IMAGE_DIR/mnt_efiboot/EFI/BOOT
+   cp $IMAGE_DIR/isolinux/bootx64.efi $IMAGE_DIR/mnt_efiboot/EFI/BOOT/
+   cp $IMAGE_DIR/isolinux/grubx64.efi $IMAGE_DIR/mnt_efiboot/EFI/BOOT/
+   cp $IMAGE_DIR/isolinux/grub.cfg $IMAGE_DIR/mnt_efiboot/EFI/BOOT/
+
+   umount $IMAGE_DIR/mnt_efiboot
+   rm -rf $IMAGE_DIR/mnt_efiboot
+
+#   echo "PluriOS $VARIANT_ISO $VERSION_ISO" > $EXTRACT_DIR/.disk/info
+#   echo "$URL_SUPPORT" > $EXTRACT_DIR/.disk/release_notes_url
+#   echo '#define DISKNAME  plurios "Metadistro Boliviana PluriOS"' > $EXTRACT_DIR/README.diskdefines
+#   echo 'plurios "Metadistro Boliviana PluriOS"'  > $EXTRACT_DIR/.disk/info
+
+#   # remove mkisofs file
+#   rm -f $EXTRACT_DIR/.disk/mkisofs
+#
+#   # remove packages from iso
+#   rm -rf $EXTRACT_DIR/{pool,preseed,dists}
 }
 
 function generate_iso(){
-  xorriso -as mkisofs -iso-level 3 \
-	-o $ISO_DIR/$NAME_ISO-$VARIANT_ISO-$VERSION_ISO-$ARCH_ISO.iso \
-	-J -joliet-long \
-	-r \
-	-V "$NAME_ISO" \
-	-b isolinux/isolinux.bin \
-	-c isolinux/boot.cat \
-	-no-emul-boot \
-	-boot-load-size 4 \
-	-boot-info-table \
-	--eltorito-alt-boot \
-	-e boot/grub/efi.img \
-	-no-emul-boot \
-	-isohybrid-gpt-basdat "$EXTRACT_DIR"
+  pushd $IMAGE_DIR
+  xorriso \
+    -as mkisofs \
+    -iso-level 3 \
+    -full-iso9660-filenames \
+    -J -J -joliet-long \
+    -volid "PluriOS" \
+    -output "$SCRIPT_DIR/$TARGET_NAME.iso" \
+    -eltorito-boot isolinux/bios.img \
+    -no-emul-boot \
+    -boot-load-size 4 \
+    -boot-info-table \
+    --eltorito-catalog boot.catalog \
+    --grub2-boot-info \
+    --grub2-mbr $CUSTOM_DIR/usr/lib/grub/i386-pc/boot_hybrid.img \
+    -partition_offset 16 \
+    --mbr-force-bootable \
+    -eltorito-alt-boot \
+        -no-emul-boot \
+        -e isolinux/efiboot.img \
+        -append_partition 2 28732ac11ff8d211ba4b00a0c93ec93b isolinux/efiboot.img \
+        -appended_part_as_gpt \
+        -iso_mbr_part_type a2a0d0ebe5b9334487c068b6b72699c7 \
+        -m "isolinux/efiboot.img" \
+        -m "isolinux/bios.img" \
+        -e '--interval:appended_partition_2:::' \
+      -exclude isolinux \
+      -graft-points \
+         "/EFI/boot/bootx64.efi=isolinux/bootx64.efi" \
+         "/EFI/boot/mmx64.efi=isolinux/mmx64.efi" \
+         "/EFI/boot/grubx64.efi=isolinux/grubx64.efi" \
+         "/EFI/ubuntu/grub.cfg=isolinux/grub.cfg" \
+         "/isolinux/bios.img=isolinux/bios.img" \
+         "/isolinux/efiboot.img=isolinux/efiboot.img" \
+         "$IMAGE_DIR"
+    popd
+
+#  xorriso -as mkisofs -iso-level 3 \
+#	-o $ISO_DIR/$NAME_ISO-$VARIANT_ISO-$VERSION_ISO-$ARCH_ISO.iso \
+#	-J -joliet-long \
+#	-r \
+#	-V "$NAME_ISO" \
+#	-b isolinux/isolinux.bin \
+#	-c isolinux/boot.cat \
+#	-no-emul-boot \
+#	-boot-load-size 4 \
+#	-boot-info-table \
+#	--eltorito-alt-boot \
+#	-e boot/grub/efi.img \
+#	-no-emul-boot \
+#	-isohybrid-gpt-basdat "$EXTRACT_DIR"
 }
 
 # ======= functions ======
@@ -136,13 +198,12 @@ function get_content_iso(){
   setup_workspace
   mount_iso
   copy_content_iso
+  umount_iso
 }
 
 function load_filesystem(){
- # backup_squashfs
   extract_content_filesystem
-  setup_isolinux_grub
-  setup_chroot
+  mount_chroot
   mount_apt
   copy_dir_scripts
   run_chroot
@@ -150,17 +211,13 @@ function load_filesystem(){
 
 function repack_filesystem(){
   umount_apt
-  copy_branding_calamares
-  replace_the_filesystem_manifes_file
+  copy_calamares
   umount_chroot
-  umount_iso
-  update_vmlinuz
   compress_content_filesystem
   calculate_filesystem_size
-
-  config_disk
 }
 
 function build_iso(){
+  config_disk
   generate_iso
 }

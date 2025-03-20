@@ -9,22 +9,11 @@ echo "
 apt remove --purge --autoremove -y \
 	snapd \
 	brasero \
-	build-essential \
 	cheese \
-	clamav \
-	clamav-base \
-	clamav-freshclam \
-	clamtk \
-	clamtk-gnome \
-	clamdscan \
 	gedit \
-	gimp \
 	gnome-games \
 	gnome-2048 \
 	gnote \
-	goldendict \
-	inkscape \
-	joe \
 	vim-tiny \
 	hexchat \
 	shotwell \
@@ -32,29 +21,28 @@ apt remove --purge --autoremove -y \
 	pidgin \
 	sound-juicer \
 	ufw \
-	gufw \
 	synaptic \
-	calamares \
-	calamares-settings-cinnamon-remix \
-	netplan.io
+	remmina \
+	alacritty \
+	gthumb
 
-apt remove -y \
-	hunspell-de-at-frami \
-	hunspell-de-ch-frami \
-	hunspell-de-de-frami \
-	hunspell-en-au \
-	hunspell-en-ca \
-	hunspell-en-gb \
-	hunspell-en-za \
-	hunspell-fr-classical \
-	hunspell-fr \
-	hunspell-it \
-	hunspell-pt-br \
-	hunspell-pt-pt \
-	hunspell-ru 
+#apt remove -y \
+#	hunspell-de-at-frami \
+#	hunspell-de-ch-frami \
+#	hunspell-de-de-frami \
+#	hunspell-en-au \
+#	hunspell-en-ca \
+#	hunspell-en-gb \
+#	hunspell-en-za \
+#	hunspell-fr-classical \
+#	hunspell-fr \
+#	hunspell-it \
+#	hunspell-pt-br \
+#	hunspell-pt-pt \
+#	hunspell-ru 
 
-apt remove --purge --autoremove	-y \
-	libreoffice-gtk \
-	libreoffice-gtk2
+#apt remove --purge --autoremove	-y \
+#	libreoffice-gtk 
+#	libreoffice-gtk2
 
 apt autoremove -y

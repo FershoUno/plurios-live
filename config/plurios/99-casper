@@ -7,7 +7,7 @@ echo "
 "
 
 rm -f /etc/casper.conf
-cat <<EOF > /etc/casper.conf
+cat <<EOF >/etc/casper.conf
 # This file should go in /etc/casper.conf
 # Supported variables are:
 # USERNAME, USERFULLNAME, HOST, BUILD_SYSTEM, FLAVOUR
@@ -24,3 +24,5 @@ export BUILD_SYSTEM="Ubuntu"
 # export FLAVOUR="Ubuntu"
 EOF
 
+# update initramfs
+update-initramfs -u 

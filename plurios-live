@@ -1,4 +1,5 @@
 #!/bin/bash
+# Author: @FershoUno
 
 set -e                  # exit on error
 set -o pipefail         # exit on pipeline error
@@ -7,17 +8,25 @@ set -u                  # treat unset variable as error
 # === variables ===
 
 SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
+
 LIB_PLURIOS="lib/plurioslib"
+
 CONF_PLURIOS="config/plurios.conf"
 CONF_CALAMARES="config/core/calamares.conf"
-BOOT_ISOLINUX_PLURIOS="config/core/live.cfg"
-BOOT_GRUB_PLURIOS="config/core/grub.cfg"
+CONF_PREPARE_ISO="config/prepare-iso-live/prepare"
+
+DIR_CONF_PLURIOS="config/plurios"
+DIR_CONF_IMAGE="config/image"
+DIR_CONF_CALAMARES="config/custom/calamares"
+#BOOT_ISOLINUX_PLURIOS="config/core/live.cfg"
+#BOOT_GRUB_PLURIOS="config/core/grub.cfg"
 
 # === variables workspace ===
 WORKSPACE="workspace"
 ISO_DIR="$SCRIPT_DIR/$WORKSPACE/iso"
 MNT_DIR="$SCRIPT_DIR/$WORKSPACE/mnt"
 EXTRACT_DIR="$SCRIPT_DIR/$WORKSPACE/extract"
+IMAGE_DIR="$SCRIPT_DIR/$WORKSPACE/image"
 CUSTOM_DIR="$SCRIPT_DIR/$WORKSPACE/custom"
 APT_DIR="$SCRIPT_DIR/apt-cache"
 
@@ -46,3 +55,5 @@ ISO_FILE=$1
 echo "start: $(date)"
 run
 echo "end: $(date)"
+
+#$1
