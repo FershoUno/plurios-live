@@ -6,42 +6,32 @@ echo "
 ##################
 "
 apt-get update
-#apt-get --with-new-pkgs upgrade -y
-
-## Install NetworkManager
-#apt-get install -y network-manager
 
 # Install Grub efi signed, etc
-apt-get install -y \
-	grub-common \
-	grub-gfxpayload-lists \
-	grub-pc \
-	grub-pc-bin \
-	grub2 \
-	grub-efi-amd64-signed \
-	shim-signed
+apt-get install -y grub-common grub-gfxpayload-lists grub-pc grub-pc-bin grub2 grub-efi-amd64-signed shim-signed
 
 # Install live tools
-apt-get install -y \
-	casper \
-	live-boot \
-	live-tools
+apt-get install -y casper live-boot live-tools ubiquity-casper mtools
+
+# core locales
+DEBIAN_FRONTEND=noninteractive apt-get install -y locales
 
 # Install calamares
-apt-get install --install-recommends -y calamares-settings-ubuntu-unity
-
-# Install Firefox
-apt-get install -y firefox firefox-l10n-es-mx
-
-# Utils
-apt-get -y install \
-	htop \
-	terminator
-
+apt-get install -y --install-recommends calamares-settings-ubuntu-unity
 update-initramfs -c -k $(ls /lib/modules)
 
-# Upgrade
-# apt-get --with-new-pkgs upgrade -y
+# Internet category
+apt-get install -y firefox firefox-locale-es thunderbird thunderbird-locale-es 
+
+# Tools category
+apt-get install -y htop terminator curl
+
+# Office category
+apt-get install -y libreoffice libreoffice-l10n-es
+
+# Graphics category
+apt-get install -y flameshot
+
 apt-get upgrade -y
 apt autoremove -y
 

@@ -1,0 +1,55 @@
+#!/bin/bash
+
+echo "
+####################
+# run 00-uninstall #
+####################
+"
+# ==========
+# uninstall snapd from the system
+# ==========
+apt remove --purge --autoremove -y snapd
+
+# ==========
+# uninstall packages from the office category
+# ==========
+apt remove --purge --autoremove -y libreoffice gnote gedit 
+
+# ==========
+# uninstall packages from the multimedia category
+# ==========
+apt remove --purge --autoremove -y brasero cheese sound-juicer shotwell gthumb gnome-sound-recorder
+
+# ===========
+# uninstall pacakges from the games category
+# ===========
+apt remove --purge --autoremove -y gnome-games gnome-2048 gnome-mahjongg
+
+# ===========
+# uninstall pacakges from the internet category
+# ===========
+apt remove --purge --autoremove -y pidgin hexchat remmina
+
+# ===========
+# uninstall pacakges from the graphics category
+# ===========
+apt remove --purge --autoremove -y imagemagick
+
+# ===========
+# uninstall pacakges from the tools category
+# ===========
+apt remove --purge --autoremove -y alacritty vim-tiny ufw synaptic gdebi
+
+
+# ===========
+# remove unnecessary languages
+# ===========
+apt remove --purge --autoremove -y \
+        language-pack-de language-pack-de-base \
+        language-pack-fr language-pack-fr-base \
+        language-pack-ru language-pack-ru-base \
+        language-pack-pt language-pack-pt-base
+
+apt remove --purge --autoremove -y aspell-en wamerican
+
+apt autoremove -y

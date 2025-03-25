@@ -8,6 +8,9 @@ echo "
 # remove 20apt-esm-hook.conf
 rm -f /etc/apt/apt.conf.d/20apt-esm-hook.conf 2>/dev/null
 
+# remove calamares 
+rm -f /usr/share/applications/calamares.desktop 2>/dev/null
+rm -f /usr/share/applications/calamares-launch-oem.desktop 2>/dev/null
 # delete list packages
 rm -rf /var/lib/apt/lists/* 2>/dev/null
 
