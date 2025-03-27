@@ -8,10 +8,17 @@ echo "
 apt-get update
 
 # Install Grub efi signed, etc
-apt-get install -y grub-common grub-gfxpayload-lists grub-pc grub-pc-bin grub2 grub-efi-amd64-signed shim-signed
+apt-get install -y grub-common grub-gfxpayload-lists grub-pc grub-pc-bin grub2 grub-efi-amd64-signed shim-signed \
+	plymouth-x11
+
+# Reinstall fonts-ubuntu
+apt-get install -y --reinstall fonts-ubuntu 
 
 # Install live tools
-apt-get install -y casper live-boot live-tools ubiquity-casper mtools
+apt-get install -y casper live-boot live-tools ubiquity-casper mtools 
+
+# Install packages system
+apt-get install finalrd dkms bcmwl-kernel-source sl-modem-daemon fonts-cantarell
 
 # core locales
 DEBIAN_FRONTEND=noninteractive apt-get install -y locales
@@ -21,16 +28,35 @@ apt-get install -y --install-recommends calamares-settings-ubuntu-unity
 update-initramfs -c -k $(ls /lib/modules)
 
 # Internet category
-apt-get install -y firefox firefox-locale-es thunderbird thunderbird-locale-es 
+apt-get install -y firefox firefox-l10n-es-mx thunderbird thunderbird-locale-es
 
 # Tools category
 apt-get install -y htop terminator curl
+
+# Multimedia category
+apt-get install -y vlc
 
 # Office category
 apt-get install -y libreoffice libreoffice-l10n-es
 
 # Graphics category
-apt-get install -y flameshot
+apt-get install -y flameshot open-vm-tools open-vm-tools-desktop
+
+
+# Custom install
+# plurios-icons
+wget -q --show-progress "https://github.com/FershoUno/plurios-icons/releases/download/v0.1/plurios-icons_0.1_all.deb"
+apt-get install ./plurios*.deb
+rm -f ./plurios*.deb
+# rustdesk
+USERNAME_PACKAGE="rustdesk"
+REPOSITORY_PACKAGE="rustdesk"
+GIT="$USERNAME_PACKAGE/$REPOSITORY_PACKAGE"
+URL_DOWNLOAD=$(curl -s https://api.github.com/repos/$GIT/releases/latest | jq -r '.assets[] | select(.name | endswith("deb") and contains("x86_64.")) | .browser_download_url')
+wget -q --show-progress "$URL_DOWNLOAD"
+apt-get install ./rust*.deb -y
+rm -f ./rust*.deb
+
 
 apt-get upgrade -y
 apt autoremove -y

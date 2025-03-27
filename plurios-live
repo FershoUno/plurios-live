@@ -1,6 +1,7 @@
 #!/bin/bash
 # Author: @FershoUno
 
+set -x			# run + debug
 set -e                  # exit on error
 set -o pipefail         # exit on pipeline error
 set -u                  # treat unset variable as error

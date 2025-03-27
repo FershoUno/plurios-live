@@ -125,17 +125,7 @@ function config_disk(){
 
    umount $IMAGE_DIR/mnt_efiboot
    rm -rf $IMAGE_DIR/mnt_efiboot
-
-#   echo "PluriOS $VARIANT_ISO $VERSION_ISO" > $EXTRACT_DIR/.disk/info
-#   echo "$URL_SUPPORT" > $EXTRACT_DIR/.disk/release_notes_url
-#   echo '#define DISKNAME  plurios "Metadistro Boliviana PluriOS"' > $EXTRACT_DIR/README.diskdefines
-#   echo 'plurios "Metadistro Boliviana PluriOS"'  > $EXTRACT_DIR/.disk/info
-
-#   # remove mkisofs file
-#   rm -f $EXTRACT_DIR/.disk/mkisofs
-#
-#   # remove packages from iso
-#   rm -rf $EXTRACT_DIR/{pool,preseed,dists}
+   find $IMAGE_DIR/ -type f -print0 | xargs -0 md5sum | grep -v -e 'isolinux' > $IMAGE_DIR/md5sum.txt
 }
 
 function generate_iso(){
@@ -176,20 +166,6 @@ function generate_iso(){
          "$IMAGE_DIR"
     popd
 
-#  xorriso -as mkisofs -iso-level 3 \
-#	-o $ISO_DIR/$NAME_ISO-$VARIANT_ISO-$VERSION_ISO-$ARCH_ISO.iso \
-#	-J -joliet-long \
-#	-r \
-#	-V "$NAME_ISO" \
-#	-b isolinux/isolinux.bin \
-#	-c isolinux/boot.cat \
-#	-no-emul-boot \
-#	-boot-load-size 4 \
-#	-boot-info-table \
-#	--eltorito-alt-boot \
-#	-e boot/grub/efi.img \
-#	-no-emul-boot \
-#	-isohybrid-gpt-basdat "$EXTRACT_DIR"
 }
 
 # ======= functions ======

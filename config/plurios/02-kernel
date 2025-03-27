@@ -8,4 +8,3 @@ echo "
 
 apt-get update
 apt-get install -y linux-image-generic
-update-grub
