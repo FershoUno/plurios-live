@@ -13,8 +13,7 @@ rm -f /usr/share/applications/calamares.desktop 2>/dev/null
 rm -f /usr/share/applications/calamares-launch-oem.desktop 2>/dev/null
 rm -f /usr/share/applications/ubuntu-unity-calamares.desktop 2>/dev/null
 
-# add launcher
-
+# add plurios calamares
 cat <<EOF > /usr/share/applications/calamares.desktop
 [Desktop Entry]
 Type=Application
@@ -26,7 +25,7 @@ Comment[es]=Calamares — Instalador del Sistema
 Icon=ubuntu-unity-installer
 Terminal=false
 StartupNotify=true
-Categories=Qt;System;PluriOS;
+Categories=System;PluriOS;
 Keywords=installer;calamares;system;
 EOF
 
@@ -45,7 +44,7 @@ Icon=rustdesk
 Terminal=false
 Type=Application
 StartupNotify=true
-Categories=Network;RemoteAccess;GTK;PluriOS;
+Categories=system;PluriOS;
 Keywords=internet;
 Actions=new-window;
 

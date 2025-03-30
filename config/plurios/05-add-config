@@ -38,6 +38,12 @@ echo 'XKBOPTIONS=""' >> /etc/default/keyboard
 sed -i "s/Prompt=lts/Prompt=never/g" /etc/update-manager/release-upgrades
 
 # ========================
+# comment on cinnamon option
+# ========================
+sed -i '/^\s*\(document-font-name\|display-overview-map\|monospace-font-name\)/s/^/#/' /usr/share/glib-2.0/schemas/10_ubuntucinnamon-environment.gschema.override
+glib-compile-schemas /usr/share/glib-2.0/schemas/
+
+# ========================
 # set font console
 # ========================
 #cat << EOF > /etc/default/console-setup
@@ -83,6 +89,49 @@ echo "$PART2" >> /etc/xdg/menus/cinnamon-applications.menu
 sed -i 's|^DISTRIB_DESCRIPTION=.*|DISTRIB_DESCRIPTION="PluriOS Metadistro Linux Boliviana"|' /etc/lsb-release
 sed -i 's|^PRETTY_NAME=.*|PRETTY_NAME="PluriOS Metadistro Linux Boliviana"|' /etc/os-release
 sed -i 's|^PRETTY_NAME=.*|PRETTY_NAME="PluriOS Metadistro Linux Boliviana"|' /usr/lib/os-release
+
+# ========================
+#  configure hostname
+# ========================
+
+hostnamectl set-hostname plurios
+
+# ========================
+# configuration mimeapps
+# ========================
+
+MIME_CACHE="/usr/share/applications/mimeinfo.cache"
+MIMEAPPS="/usr/share/applications/x-cinnamon-mimeapps.list"
+
+sed -i "s/gif=firefox.desktop;org.gnome.eog.desktop;/gif=org.gnome.eog.desktop;/g" $MIME_CACHE
+sed -i "s/jpeg=firefox.desktop;org.gnome.eog.desktop;/jpeg=org.gnome.eog.desktop;/g" $MIME_CACHE
+sed -i "s/png=firefox.desktop;org.gnome.eog.desktop;/png=org.gnome.eog.desktop;/g" $MIME_CACHE
+sed -i "s/svg+xml=firefox.desktop;org.gnome.eog.desktop;/svg+xml=org.gnome.eog.desktop;/g" $MIME_CACHE
+sed -i "s/webp=firefox.desktop;org.gnome.eog.desktop;/webp=firefox.desktop;/g" $MIME_CACHE
+sed -i "s/mp4=org.gnome.Rhythmbox3.desktop/mp4=vlc.desktop;/g" $MIME_CACHE
+sed -i "s/ogg=firefox.desktop/ogg=Rhythmbox3.desktop;/g" $MIME_CACHE
+
+sed -i "s/bmp=eog.desktop;gimp.desktop;/bmp=eog.desktop;/g" $MIMEAPPS
+sed -i "s/gif=eog.desktop;gimp.desktop;/gif=eog.desktop;/g" $MIMEAPPS
+sed -i "s/jpeg=eog.desktop;gimp.desktop;/jpeg=eog.desktop;/g" $MIMEAPPS
+sed -i "s/png=eog.desktop;gimp.desktop;/png=eog.desktop;/g" $MIMEAPPS
+sed -i "s/svg+xml=inkscape.desktop;eog.desktop;/svg+xml=eog.desktop;inkscape.desktop;/g" $MIMEAPPS
+
+
+xdg-mime default eog.desktop image/jpeg
+xdg-mime default eog.desktop image/png
+xdg-mime default eog.desktop image/gif
+xdg-mime default eog.desktop image/bmp
+
+xdg-mime default rhythmbox.desktop audio/mpeg
+xdg-mime default rhythmbox.desktop audio/x-wav
+xdg-mime default rhythmbox.desktop audio/ogg
+
+xdg-mime default vlc.desktop video/mp4
+xdg-mime default vlc.desktop video/x-matroska
+xdg-mime default vlc.desktop video/ogg
+
+
 
 # ========================
 # rewrites the plymouth boot image from base64
@@ -502,4 +551,5 @@ QlXefACpEFp6nySEmKv6Xv4fAUOlYoQTBxYAAAAASUVORK5CYII=" | base64 -d > /usr/share/p
 # ===================
 
 fc-cache -fv
+
 apt-get upgrade -y

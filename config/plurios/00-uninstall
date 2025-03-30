@@ -13,12 +13,12 @@ apt remove --purge --autoremove -y snapd
 # ==========
 # uninstall packages from the office category
 # ==========
-apt remove --purge --autoremove -y libreoffice gnote gedit 
+apt remove --purge --autoremove -y libreoffice
 
 # ==========
 # uninstall packages from the multimedia category
 # ==========
-apt remove --purge --autoremove -y brasero cheese sound-juicer shotwell gthumb gnome-sound-recorder
+apt remove --purge --autoremove -y brasero cheese sound-juicer shotwell gthumb gnome-sound-recorder totem
 
 # ===========
 # uninstall pacakges from the games category
@@ -33,12 +33,12 @@ apt remove --purge --autoremove -y pidgin hexchat remmina
 # ===========
 # uninstall pacakges from the graphics category
 # ===========
-apt remove --purge --autoremove -y imagemagick
+apt remove --purge --autoremove -y imagemagick imagemagick-6.q16 eog
 
 # ===========
 # uninstall pacakges from the tools category
 # ===========
-apt remove --purge --autoremove -y alacritty vim-tiny ufw synaptic gdebi
+apt remove --purge --autoremove -y alacritty ufw deja-dup gnome-online-accounts-gtk
 
 
 # ===========
