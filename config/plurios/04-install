@@ -7,39 +7,39 @@ echo "
 "
 apt-get update
 
-# Install Grub efi signed, etc
+# Grub efi signed, etc
 apt-get install -y grub-common grub-gfxpayload-lists grub-pc grub-pc-bin grub2 grub-efi-amd64-signed shim-signed \
 	plymouth-x11
 
-# Reinstall fonts-ubuntu
+# Reinstallation
 apt-get install -y --reinstall fonts-ubuntu
 
-# Install live tools
+# live tools
 apt-get install -y casper live-boot live-tools ubiquity-casper mtools
 
-# Install packages system
+# system
 apt-get install finalrd dkms bcmwl-kernel-source sl-modem-daemon fonts-cantarell ntfs-3g apparmor apparmor-utils
 
-# core locales
+# ocales
 DEBIAN_FRONTEND=noninteractive apt-get install -y locales
 
-# Install calamares
+# calamares
 apt-get install -y --install-recommends calamares-settings-ubuntu-unity
 update-initramfs -c -k $(ls /lib/modules)
 
-# Internet category
+# Internet
 apt-get install -y firefox firefox-l10n-es-mx thunderbird thunderbird-locale-es
 
-# Tools category
-apt-get install -y htop terminator curl unrar-free gparted
+# Tools
+apt-get install -y htop terminator curl gparted
 
-# Multimedia category
-apt-get install -y vlc eog
+# Multimedia
+apt-get install -y vlc eog rhythmbox
 
-# Office category
-apt-get install -y libreoffice libreoffice-l10n-es
+# Office
+apt-get install -y libreoffice libreoffice-l10n-es mousepad
 
-# Graphics category
+# Graphics
 apt-get install -y flameshot open-vm-tools open-vm-tools-desktop libvirt-glib-1.0-0
 
 # =============
@@ -49,12 +49,13 @@ apt-get install -y flameshot open-vm-tools open-vm-tools-desktop libvirt-glib-1.
 wget -q --show-progress "https://github.com/FershoUno/plurios-icons/releases/download/v0.1/plurios-icons_0.1_all.deb"
 apt-get install ./plurios*.deb
 rm -f ./plurios*.deb
+
 # rustdesk
-USERNAME_PACKAGE="rustdesk"
-REPOSITORY_PACKAGE="rustdesk"
-GIT="$USERNAME_PACKAGE/$REPOSITORY_PACKAGE"
-URL_DOWNLOAD=$(curl -s https://api.github.com/repos/$GIT/releases/latest | jq -r '.assets[] | select(.name | endswith("deb") and contains("x86_64.")) | .browser_download_url')
-wget -q --show-progress "$URL_DOWNLOAD"
+USERNAME="rustdesk"
+REPOSITORY="rustdesk"
+GIT="$USERNAME/$REPOSITORY"
+URL=$(curl -s https://api.github.com/repos/$GIT/releases/latest | jq -r '.assets[] | select(.name | endswith("deb") and contains("x86_64.")) | .browser_download_url')
+wget -q --show-progress $URL
 apt-get install ./rust*.deb -y
 rm -f ./rust*.deb
 
@@ -90,9 +91,6 @@ URL=$(curl -s https://api.github.com/repos/$GIT/releases/latest | jq -r '.assets
 wget -q --show-progress $URL
 apt-get install ./drawio*.deb -y
 rm -f ./drawio*.deb
-
-
-
 
 
 apt-get upgrade -y

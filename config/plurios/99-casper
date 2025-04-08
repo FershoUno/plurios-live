@@ -6,7 +6,7 @@ echo "
 #################
 "
 
-rm -f /etc/casper.conf
+# rm -f /etc/casper.conf
 cat <<EOF >/etc/casper.conf
 # This file should go in /etc/casper.conf
 # Supported variables are:

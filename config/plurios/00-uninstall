@@ -6,43 +6,43 @@ echo "
 ####################
 "
 # ==========
-# uninstall snapd from the system
+# snapd
 # ==========
 apt remove --purge --autoremove -y snapd
 
 # ==========
-# uninstall packages from the office category
+# office
 # ==========
-apt remove --purge --autoremove -y libreoffice
+apt remove --purge --autoremove -y libreoffice gedit
 
 # ==========
-# uninstall packages from the multimedia category
+# multimedia
 # ==========
-apt remove --purge --autoremove -y brasero cheese sound-juicer shotwell gthumb gnome-sound-recorder totem
+apt remove --purge --autoremove -y brasero cheese sound-juicer shotwell gthumb gnome-sound-recorder totem rhythmbox
 
 # ===========
-# uninstall pacakges from the games category
+# games
 # ===========
 apt remove --purge --autoremove -y gnome-games gnome-2048 gnome-mahjongg
 
 # ===========
-# uninstall pacakges from the internet category
+# internet
 # ===========
 apt remove --purge --autoremove -y pidgin hexchat remmina
 
 # ===========
-# uninstall pacakges from the graphics category
+# graphics
 # ===========
 apt remove --purge --autoremove -y imagemagick imagemagick-6.q16 eog
 
 # ===========
-# uninstall pacakges from the tools category
+# tools
 # ===========
 apt remove --purge --autoremove -y alacritty ufw deja-dup gnome-online-accounts-gtk
 
 
 # ===========
-# remove unnecessary languages
+# unnecessary languages
 # ===========
 apt remove --purge --autoremove -y \
         language-pack-de language-pack-de-base \

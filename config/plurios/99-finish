@@ -30,7 +30,7 @@ Keywords=installer;calamares;system;
 EOF
 
 # remove rustdesk
-rm -f /usr/share/applications/rustdesk.desktop
+#rm -f /usr/share/applications/rustdesk.desktop
 rm -f /usr/share/applications/rustdesk-link.desktop
 # add launcher rustdesk
 

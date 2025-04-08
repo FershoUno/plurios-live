@@ -1,9 +1,9 @@
 #!/bin/bash
 
 echo "
-########################
-# run 05-configuration #
-########################
+#####################
+# run 05-add-config #
+#####################
 "
 
 #=========================
@@ -23,6 +23,38 @@ export LC_ALL=es_BO.UTF-8
 echo "America/La_Paz" > /etc/timezone
 ln -sf /usr/share/zoneinfo/America/La_Paz /etc/localtime
 dpkg-reconfigure -f noninteractive tzdata
+
+# ========================
+# renaming directories
+# ========================
+
+cat <<EOF >/etc/xdg/user-dirs.defaults
+# Default settings for user directories
+#
+# The values are relative pathnames from the home directory and
+# will be translated on a per-path-element basis into the users locale
+DESKTOP=Escritorio
+DOWNLOAD=Descargas
+TEMPLATES=Plantillas
+PUBLICSHARE=Público
+DOCUMENTS=Documentos
+MUSIC=Música
+PICTURES=Imágenes
+VIDEOS=Vídeos
+# Another alternative is:
+#MUSIC=Documents/Music
+#PICTURES=Documents/Pictures
+#VIDEOS=Documents/Videos
+EOF
+
+# ========================
+# application customization
+# ========================
+
+dconf write /org/xfce/mousepad/window/show-statusbar true
+mkdir -p /etc/skel/.config/dconf
+dconf dump /org/xfce/mousepad/ > /etc/skel/.config/dconf/mousepad.dconf
+
 
 # ========================
 # set the keyboard language (Spanish/Latin American)
@@ -56,6 +88,11 @@ glib-compile-schemas /usr/share/glib-2.0/schemas/
 #setupcon
 
 update-initramfs -u
+
+# ========================
+# config gedit
+# ========================
+#gsettings set org.gnome.gedit.plugins active-plugins "['spell', 'sort', 'modelines', 'filebrowser', 'docinfo', 'textsize']"
 
 # ========================
 # remove the snapd path from the environment file
@@ -94,44 +131,29 @@ sed -i 's|^PRETTY_NAME=.*|PRETTY_NAME="PluriOS Metadistro Linux Boliviana"|' /us
 #  configure hostname
 # ========================
 
-hostnamectl set-hostname plurios
+#hostnamectl set-hostname plurios
+
+cat <<EOF >/etc/hostname
+plurios
+EOF
+
+cat <<EOF >/etc/hosts
+127.0.0.1 localhost
+127.0.1.1 plurios
+
+# The following lines are desirable for IPv6 capable hosts
+::1     ip6-localhost ip6-loopback
+fe00::0 ip6-localnet
+ff00::0 ip6-mcastprefix
+ff02::1 ip6-allnodes
+ff02::2 ip6-allrouters
+ff02::3 ip6-allhosts
+EOF
 
 # ========================
 # configuration mimeapps
 # ========================
-
-MIME_CACHE="/usr/share/applications/mimeinfo.cache"
-MIMEAPPS="/usr/share/applications/x-cinnamon-mimeapps.list"
-
-sed -i "s/gif=firefox.desktop;org.gnome.eog.desktop;/gif=org.gnome.eog.desktop;/g" $MIME_CACHE
-sed -i "s/jpeg=firefox.desktop;org.gnome.eog.desktop;/jpeg=org.gnome.eog.desktop;/g" $MIME_CACHE
-sed -i "s/png=firefox.desktop;org.gnome.eog.desktop;/png=org.gnome.eog.desktop;/g" $MIME_CACHE
-sed -i "s/svg+xml=firefox.desktop;org.gnome.eog.desktop;/svg+xml=org.gnome.eog.desktop;/g" $MIME_CACHE
-sed -i "s/webp=firefox.desktop;org.gnome.eog.desktop;/webp=firefox.desktop;/g" $MIME_CACHE
-sed -i "s/mp4=org.gnome.Rhythmbox3.desktop/mp4=vlc.desktop;/g" $MIME_CACHE
-sed -i "s/ogg=firefox.desktop/ogg=Rhythmbox3.desktop;/g" $MIME_CACHE
-
-sed -i "s/bmp=eog.desktop;gimp.desktop;/bmp=eog.desktop;/g" $MIMEAPPS
-sed -i "s/gif=eog.desktop;gimp.desktop;/gif=eog.desktop;/g" $MIMEAPPS
-sed -i "s/jpeg=eog.desktop;gimp.desktop;/jpeg=eog.desktop;/g" $MIMEAPPS
-sed -i "s/png=eog.desktop;gimp.desktop;/png=eog.desktop;/g" $MIMEAPPS
-sed -i "s/svg+xml=inkscape.desktop;eog.desktop;/svg+xml=eog.desktop;inkscape.desktop;/g" $MIMEAPPS
-
-
-xdg-mime default eog.desktop image/jpeg
-xdg-mime default eog.desktop image/png
-xdg-mime default eog.desktop image/gif
-xdg-mime default eog.desktop image/bmp
-
-xdg-mime default rhythmbox.desktop audio/mpeg
-xdg-mime default rhythmbox.desktop audio/x-wav
-xdg-mime default rhythmbox.desktop audio/ogg
-
-xdg-mime default vlc.desktop video/mp4
-xdg-mime default vlc.desktop video/x-matroska
-xdg-mime default vlc.desktop video/ogg
-
-
+# 
 
 # ========================
 # rewrites the plymouth boot image from base64
