@@ -18,7 +18,8 @@ apt-get install -y --reinstall fonts-ubuntu
 apt-get install -y casper live-boot live-tools ubiquity-casper mtools
 
 # system
-apt-get install finalrd dkms bcmwl-kernel-source sl-modem-daemon fonts-cantarell ntfs-3g apparmor apparmor-utils
+apt-get install finalrd dkms bcmwl-kernel-source sl-modem-daemon fonts-cantarell ntfs-3g apparmor apparmor-utils \
+	libnotify-bin
 
 # ocales
 DEBIAN_FRONTEND=noninteractive apt-get install -y locales

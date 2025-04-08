@@ -27,7 +27,6 @@ dpkg-reconfigure -f noninteractive tzdata
 # ========================
 # renaming directories
 # ========================
-
 cat <<EOF >/etc/xdg/user-dirs.defaults
 # Default settings for user directories
 #
@@ -50,11 +49,9 @@ EOF
 # ========================
 # application customization
 # ========================
-
-dconf write /org/xfce/mousepad/window/show-statusbar true
-mkdir -p /etc/skel/.config/dconf
-dconf dump /org/xfce/mousepad/ > /etc/skel/.config/dconf/mousepad.dconf
-
+#dconf write /org/xfce/mousepad/window/show-statusbar true
+#mkdir -p /etc/skel/.config/dconf
+#dconf dump /org/xfce/mousepad/ > /etc/skel/.config/dconf/mousepad.dconf
 
 # ========================
 # set the keyboard language (Spanish/Latin American)
@@ -86,7 +83,6 @@ glib-compile-schemas /usr/share/glib-2.0/schemas/
 #EOF
 #
 #setupcon
-
 update-initramfs -u
 
 # ========================

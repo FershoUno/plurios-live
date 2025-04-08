@@ -3,4 +3,3 @@ apt-cache
 *.squashfs
 *.tar.gz
 workspace
-config/core/

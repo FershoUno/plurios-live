@@ -1,7 +1,7 @@
 #!/bin/bash
 
 function setup_workspace(){
-  mkdir -p $MNT_DIR $EXTRACT_DIR $CUSTOM_DIR $APT_DIR
+  mkdir -p $MNT_DIR $EXTRACT_DIR $CUSTOM_DIR $APT_DIR $ISO_DIR
 }
 
 function mount_chroot(){
@@ -89,7 +89,6 @@ function calculate_filesystem_size(){
 function config_disk(){
    sed -i "s/DISC_LABEL_NAME/$DISC_LABEL_NAME/g" $IMAGE_DIR/README.diskdefines
 
-   # create EFIBOOT
    mkdir -p $IMAGE_DIR/EFI/BOOT
    cp $IMAGE_DIR/isolinux/bootx64.efi $IMAGE_DIR/EFI/BOOT
    cp $IMAGE_DIR/isolinux/grubx64.efi $IMAGE_DIR/EFI/BOOT
@@ -113,77 +112,13 @@ function config_disk(){
 
 function generate_iso(){
   pushd $IMAGE_DIR
-
-#xorriso \
-#    -as mkisofs \
-#    -iso-level 3 \
-#    -full-iso9660-filenames \
-#    -J -joliet-long \
-#    -volid "${NAME_ISO^^}" \
-#    -output "$SCRIPT_DIR/$TARGET_NAME.iso" \
-#    -eltorito-boot isolinux/bios.img \
-#    -no-emul-boot \
-#    -boot-load-size 4 \
-#    -boot-info-table \
-#    --grub2-boot-info \
-#    --grub2-mbr $CUSTOM_DIR/usr/lib/grub/i386-pc/boot_hybrid.img \
-#    -eltorito-alt-boot \
-#    -e isolinux/efiboot.img \
-#    -no-emul-boot \
-#    -isohybrid-gpt-basdat \
-#    -isohybrid-apm-hfsplus \
-#    -graft-points \
-#        "/EFI/boot/bootx64.efi=isolinux/bootx64.efi" \
-#        "/EFI/boot/mmx64.efi=isolinux/mmx64.efi" \
-#        "/EFI/boot/grubx64.efi=isolinux/grubx64.efi" \
-#        "/EFI/ubuntu/grub.cfg=isolinux/grub.cfg" \
-#        "/isolinux/bios.img=isolinux/bios.img" \
-#        "/isolinux/efiboot.img=isolinux/efiboot.img" \
-#        "$IMAGE_DIR"
-
-
-#  xorriso \
-#    -as mkisofs \
-#    -iso-level 3 \
-#    -full-iso9660-filenames \
-#    -J -joliet-long \
-#    -volid "${NAME_ISO^^}" \
-#    -output "$SCRIPT_DIR/$TARGET_NAME.iso" \
-#    -eltorito-boot isolinux/bios.img \
-#    -no-emul-boot \
-#    -boot-load-size 4 \
-#    -boot-info-table \
-#    --eltorito-catalog boot.catalog \
-#    --grub2-boot-info \
-#    --grub2-mbr $CUSTOM_DIR/usr/lib/grub/i386-pc/boot_hybrid.img \
-#    -partition_offset 16 \
-#    --mbr-force-bootable \
-#    -eltorito-alt-boot \
-#        -no-emul-boot \
-#        -e isolinux/efiboot.img \
-#        -append_partition 2 28732ac11ff8d211ba4b00a0c93ec93b isolinux/efiboot.img \
-#        -appended_part_as_gpt \
-#        -iso_mbr_part_type a2a0d0ebe5b9334487c068b6b72699c7 \
-#        -m "isolinux/efiboot.img" \
-#        -m "isolinux/bios.img" \
-#        -e '--interval:appended_partition_2:::' \
-#      -exclude isolinux \
-#      -graft-points \
-#         "/EFI/boot/bootx64.efi=isolinux/bootx64.efi" \
-#         "/EFI/boot/mmx64.efi=isolinux/mmx64.efi" \
-#         "/EFI/boot/grubx64.efi=isolinux/grubx64.efi" \
-#         "/EFI/ubuntu/grub.cfg=isolinux/grub.cfg" \
-#         "/isolinux/bios.img=isolinux/bios.img" \
-#         "/isolinux/efiboot.img=isolinux/efiboot.img" \
-#         "$IMAGE_DIR"
-
 xorriso \
     -as mkisofs \
     -iso-level 3 \
     -full-iso9660-filenames \
     -J -joliet-long \
     -volid "${NAME_ISO^^}" \
-    -output "$SCRIPT_DIR/$TARGET_NAME.iso" \
+    -output "$ISO_DIR/$TARGET_NAME.iso" \
     -eltorito-boot isolinux/bios.img \
     -no-emul-boot \
     -boot-load-size 4 \
@@ -204,10 +139,7 @@ xorriso \
             "/isolinux/bios.img=isolinux/bios.img" \
             "/isolinux/efiboot.img=isolinux/efiboot.img" \
             "$IMAGE_DIR"
-
-
     popd
-
 }
 
 # ======= functions ======
