@@ -86,11 +86,6 @@ glib-compile-schemas /usr/share/glib-2.0/schemas/
 update-initramfs -u
 
 # ========================
-# config gedit
-# ========================
-#gsettings set org.gnome.gedit.plugins active-plugins "['spell', 'sort', 'modelines', 'filebrowser', 'docinfo', 'textsize']"
-
-# ========================
 # remove the snapd path from the environment file
 # ========================
 sed -i 's#:\/snap/bin##' /etc/environment
@@ -122,12 +117,9 @@ echo "$PART2" >> /etc/xdg/menus/cinnamon-applications.menu
 sed -i 's|^DISTRIB_DESCRIPTION=.*|DISTRIB_DESCRIPTION="PluriOS Metadistro Linux Boliviana"|' /etc/lsb-release
 sed -i 's|^PRETTY_NAME=.*|PRETTY_NAME="PluriOS Metadistro Linux Boliviana"|' /etc/os-release
 sed -i 's|^PRETTY_NAME=.*|PRETTY_NAME="PluriOS Metadistro Linux Boliviana"|' /usr/lib/os-release
-
-# ========================
-#  configure hostname
-# ========================
-
-#hostnamectl set-hostname plurios
+sed -i 's|^NAME=.*|NAME="PluriOS"|' /etc/os-release
+sed -i 's|^VERSION_ID=.*|VERSION_ID="2.5"|' /etc/os-release
+sed -i 's|^VERSION=.*|VERSION="2.5 (Metadistro Linux Boliviana)"|' /etc/os-release
 
 cat <<EOF >/etc/hostname
 plurios

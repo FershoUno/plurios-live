@@ -77,24 +77,24 @@ profile drawio /opt/drawio/drawio flags=(unconfined) {
   include if exists <local/drawio>
 }
 EOF
-
-systemctl enable apparmor 2>/dev/null
-systemctl start apparmor 2>/dev/null
-apparmor_parser -r /etc/apparmor.d/drawio 2>/dev/null
-systemctl reload apparmor 2>/dev/null
-systemctl restart apparmor 2>/dev/null
-
-# draw.io
-USERNAME="jgraph"
-REPOSITORY="drawio-desktop"
-GIT="$USERNAME/$REPOSITORY"
-URL=$(curl -s https://api.github.com/repos/$GIT/releases/latest | jq -r '.assets[] | select(.name | endswith(".deb") and contains("amd64")) | .browser_download_url')
-wget -q --show-progress $URL
-apt-get install ./drawio*.deb -y
-rm -f ./drawio*.deb
-
-
-apt-get upgrade -y
-apt autoremove -y
-
+#
+#systemctl enable apparmor 2>/dev/null
+#systemctl start apparmor 2>/dev/null
+#apparmor_parser -r /etc/apparmor.d/drawio 2>/dev/null
+#systemctl reload apparmor 2>/dev/null
+#systemctl restart apparmor 2>/dev/null
+#
+## draw.io
+#USERNAME="jgraph"
+#REPOSITORY="drawio-desktop"
+#GIT="$USERNAME/$REPOSITORY"
+#URL=$(curl -s https://api.github.com/repos/$GIT/releases/latest | jq -r '.assets[] | select(.name | endswith(".deb") and contains("amd64")) | .browser_download_url')
+#wget -q --show-progress $URL
+#apt-get install ./drawio*.deb -y
+#rm -f ./drawio*.deb
+#
+#
+#apt-get upgrade -y
+#apt autoremove -y
+#
 
