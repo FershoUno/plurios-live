@@ -1,0 +1,44 @@
+#!/bin/bash
+
+pushd /image || exit 1
+
+cp /boot/vmlinuz-**-**-generic casper/vmlinuz
+cp /boot/initrd.img-**-**-generic casper/initrd
+
+cp /usr/lib/shim/shimx64.efi.signed.previous isolinux/bootx64.efi
+cp /usr/lib/shim/mmx64.efi isolinux/mmx64.efi
+cp /usr/lib/grub/x86_64-efi-signed/grubx64.efi.signed isolinux/grubx64.efi
+
+(
+    cd isolinux || exit 1
+
+    dd if=/dev/zero of=efiboot.img bs=1M count=10 status=progress
+    mkfs.vfat -n "EFIBOOT"  efiboot.img
+    for dir in "efi" "efi/ubuntu" "efi/boot"
+    do
+        LC_CTYPE=C mmd -i efiboot.img "::${dir}"
+    done
+
+    declare -A FILES_EFI=(
+        ["./bootx64.efi"]="efi/boot/bootx64.efi"
+        ["./mmx64.efi"]="efi/boot/mmx64.efi"
+        ["./grubx64.efi"]="efi/boot/grubx64.efi"
+        ["./grub.cfg"]="efi/ubuntu/grub.cfg"
+    )
+
+    for file in "${!FILES_EFI[@]}"
+    do
+        LC_CTYPE=C mcopy -i efiboot.img "$file" "::${FILES_EFI[$file]}"
+    done
+)
+
+grub-mkstandalone ..format=i386-pc --output=isolinux/core.img \
+    --install-modules="linux16 linux normal iso9660 biosdisk search" \
+    --modules="linux16 linux normal iso9660 biosdisk search" \
+    --locales="" --fonts="" \
+    "boot/grub/grub.cfg=isolinux/grub.cfg"
+
+cat /usr/lib/grub/i386-pc/cdboot.img isolinux/core.img > isolinux/bios.img
+
+popd || exit 1
+

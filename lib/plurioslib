@@ -1,0 +1,158 @@
+#!/bin/bash
+
+function setup_workspace(){
+  mkdir -p $MNT_DIR $EXTRACT_DIR $CUSTOM_DIR $APT_DIR $ISO_DIR
+}
+
+function mount_chroot(){
+  mount --bind /dev $CUSTOM_DIR/dev
+  mount --bind /run $CUSTOM_DIR/run
+  chroot $CUSTOM_DIR mount none -t proc /proc
+  chroot $CUSTOM_DIR mount none -t sysfs /sys
+  chroot $CUSTOM_DIR mount none -t devpts /dev/pts
+}
+
+function umount_chroot(){
+  chroot $CUSTOM_DIR umount /proc
+  chroot $CUSTOM_DIR umount /sys
+  chroot $CUSTOM_DIR umount /dev/pts
+  umount -l $CUSTOM_DIR/dev
+  umount -l $CUSTOM_DIR/run
+}
+
+function run_chroot(){
+  chroot $CUSTOM_DIR bash -c 'for script in plurios/*; do bash -x "$script"; done'
+  chroot $CUSTOM_DIR bash -c 'rm -rf /plurios'
+  chroot $CUSTOM_DIR bash -c 'bash -x /prepare'
+  chroot $CUSTOM_DIR bash -c 'rm -rf /prepare'
+}
+
+function mount_iso(){
+  mount -o loop $ISO_FILE $MNT_DIR
+}
+
+function umount_iso(){
+  umount $MNT_DIR
+}
+
+function mount_apt(){
+  mount --bind $APT_DIR $CUSTOM_DIR/var/cache/apt/archives
+}
+
+function umount_apt(){
+  umount $CUSTOM_DIR/var/cache/apt/archives
+}
+
+function copy_content_iso(){
+  rsync -a "$MNT_DIR"/ $EXTRACT_DIR
+}
+
+function extract(){
+  unsquashfs -f -d $CUSTOM_DIR $EXTRACT_DIR/casper/$1
+}
+
+function extract_content_filesystem(){
+  extract "minimal.squashfs"
+}
+
+function compress_content_filesystem(){
+  mv $CUSTOM_DIR/image $SCRIPT_DIR/$WORKSPACE/
+  mv $CUSTOM_DIR/filesystem.manifest $IMAGE_DIR/casper/
+  rmdir $CUSTOM_DIR/{bin.usr-is-merged,lib.usr-is-merged,sbin.usr-is-merged}
+
+ mksquashfs $CUSTOM_DIR $IMAGE_DIR/casper/filesystem.squashfs -comp $COMPRESSION \
+	-Xcompression-level 19 -b 1024K -always-use-fragments -noappend -quiet -progress \
+        -e "var/cache/apt/archives/*" \
+        -e "root/*" \
+        -e "root/.*" \
+        -e "tmp/*" \
+        -e "tmp/.*" \
+        -e "swapfile"
+}
+
+function copy_directories_and_files(){
+  cp -r $SCRIPT_DIR/$DIR_CONF_PLURIOS $CUSTOM_DIR/
+  cp $SCRIPT_DIR/$CONF_PREPARE_ISO $CUSTOM_DIR/
+  cp -r $SCRIPT_DIR/$DIR_CONF_IMAGE $CUSTOM_DIR/
+  cp -a $SCRIPT_DIR/$CONF_DOTFILES/. $CUSTOM_DIR/etc/skel/
+  cat $SCRIPT_DIR/$DIR_WALLPAPER/watermark.png > $CUSTOM_DIR/usr/share/plymouth/themes/ubuntucinnamon-spinner/watermark.png
+  cat $SCRIPT_DIR/$DIR_WALLPAPER/plurios25-01.png > $CUSTOM_DIR/usr/share/backgrounds/ubuntucinnamon/noble/ubuntu_cinnamon_noble_numbat.jpg
+}
+
+function copy_calamares(){
+  rm -rf $CUSTOM_DIR/etc/calamares/
+  cp -r $SCRIPT_DIR/$DIR_CONF_CALAMARES/$DIR_CALAMARES/calamares $CUSTOM_DIR/etc/
+}
+
+function calculate_filesystem_size(){
+  du -sx --block-size=1 $IMAGE_DIR/casper/filesystem.squashfs | cut -f1 > $IMAGE_DIR/casper/filesystem.size
+}
+
+function config_disk(){
+  sed -i "s/DISC_LABEL_NAME/$DISC_LABEL_NAME/g" $IMAGE_DIR/README.diskdefines
+  find $IMAGE_DIR -type f -exec md5sum {} \; | sed "s|^$(pwd)/||" > $IMAGE_DIR/md5sum.txt
+}
+
+function generate_iso(){
+  pushd $IMAGE_DIR
+xorriso \
+    -as mkisofs \
+    -iso-level 3 \
+    -full-iso9660-filenames \
+    -J -joliet-long \
+    -volid "${NAME_ISO^^}" \
+    -output "$ISO_DIR/$TARGET_NAME.iso" \
+    -eltorito-boot isolinux/bios.img \
+    -no-emul-boot \
+    -boot-load-size 4 \
+    -boot-info-table \
+    --eltorito-catalog boot.catalog \
+    --grub2-boot-info \
+    --grub2-mbr $CUSTOM_DIR/usr/lib/grub/i386-pc/boot_hybrid.img \
+    -partition_offset 16 \
+    --mbr-force-bootable \
+    -eltorito-alt-boot \
+        -no-emul-boot \
+        -e isolinux/efiboot.img \
+        -graft-points \
+            "/EFI/boot/bootx64.efi=isolinux/bootx64.efi" \
+            "/EFI/boot/mmx64.efi=isolinux/mmx64.efi" \
+            "/EFI/boot/grubx64.efi=isolinux/grubx64.efi" \
+            "/EFI/ubuntu/grub.cfg=isolinux/grub.cfg" \
+            "/isolinux/bios.img=isolinux/bios.img" \
+            "/isolinux/efiboot.img=isolinux/efiboot.img" \
+            "$IMAGE_DIR"
+    popd
+
+   md5sum "$ISO_DIR/$TARGET_NAME.iso" > "$ISO_DIR/$TARGET_NAME.iso.md5"
+}
+
+# ======= functions ======
+
+function get_content_iso(){
+  setup_workspace
+  mount_iso
+  copy_content_iso
+  umount_iso
+}
+
+function load_filesystem(){
+  extract_content_filesystem
+  mount_chroot
+  mount_apt
+  copy_directories_and_files
+  run_chroot
+}
+
+function repack_filesystem(){
+  umount_apt
+  copy_calamares
+  umount_chroot
+  compress_content_filesystem
+  calculate_filesystem_size
+}
+
+function build_iso(){
+  config_disk
+  generate_iso
+}

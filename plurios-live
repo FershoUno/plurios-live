@@ -1,0 +1,44 @@
+#!/bin/bash
+# Author: @FershoUno <https://github.com/FershoUno>
+# Author: Jared Lopez <jared.lopez@openit.com.bo>
+
+set -x			# debug
+set -e                  # exit on error
+set -o pipefail         # exit on pipeline error
+set -u                  # treat unset variable as error
+
+# === variables ===
+SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
+CONF_VAR="config/variables.conf"
+WORKSPACE="workspace"
+
+# === load files ===
+. $CONF_VAR || exit 1
+. $CONF_PLURIOS || exit 1
+. $LIB_PLURIOS || exit 1
+
+# === main ===
+
+function run(){
+  get_content_iso
+  load_filesystem
+  repack_filesystem
+  build_iso
+}
+
+if [[ "$(whoami)" != "root" ]]
+then
+	echo "You need to run plurios-live as root"
+	exit 1
+fi
+
+ISO_FILE="${1:-}"
+if ! [[ -n "$ISO_FILE" && -f "$ISO_FILE" && "${ISO_FILE##*.}" == "iso" ]]; then
+    echo "Error: Use an existing file and it is in ISO format"
+    echo "Use: bash $0 ubuntucinnamon-24.04.2-desktop-amd64.iso"
+    exit 1
+fi
+
+echo "start: $(date)"
+run
+echo "end: $(date)"

@@ -1,0 +1,45 @@
+#!/bin/bash
+
+echo "
+########################
+# run 01-remove-config #
+########################
+"
+echo "remove dir lighttpd.."
+rm -rf /etc/lighttpd 2>/dev/null
+
+echo "remove home cinnamonremix.."
+rm -rf /home/ubuntucinnamonremix 2>/dev/null
+
+echo "remove directory gedit.."
+rm -rf usr/lib/x86_64-linux-gnu/gedit/ 2>/dev/null
+
+echo "remove service snapd.app-prompt-listener.."
+systemctl disable snapd.aa-prompt-listener  2>/dev/null
+rm -f /lib/systemd/system/snapd.aa-prompt-listener.service  2>/dev/null
+
+# ==========
+# remove snapd on environment file
+# ==========
+sed -i 's#:\/snap/bin##' /etc/environment
+
+# ==========
+# remove old sources.list*
+# ==========
+rm -f /etc/apt/sources.list~ 2>/dev/null
+rm -f /etc/apt/sources.list.save 2>/dev/null
+
+# ==========
+# remove dir snapd
+# ==========
+rm -rf /var/lib/snapd
+rm -f e/tc/apt/apt.conf.d/20snapd.conf 2>/dev/null
+# disable snapd
+cat <<EOF > /etc/apt/preferences.d/nosnap.pref
+Package: snapd
+Pin: release a=*
+Pin-Priority: -10
+EOF
+
+# remove link merged
+unlink /etc/xdg/menus/cinnamon-applications-merged 2>/dev/null

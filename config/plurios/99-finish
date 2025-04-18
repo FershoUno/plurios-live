@@ -1,0 +1,71 @@
+#!/bin/bash
+
+echo "
+#################
+# run 99-finish #
+#################
+"
+# remove 20apt-esm-hook.conf
+rm -f /etc/apt/apt.conf.d/20apt-esm-hook.conf 2>/dev/null
+
+# remove calamares 
+rm -f /usr/share/applications/calamares.desktop 2>/dev/null
+rm -f /usr/share/applications/calamares-launch-oem.desktop 2>/dev/null
+rm -f /usr/share/applications/ubuntu-unity-calamares.desktop 2>/dev/null
+
+# add plurios calamares
+cat <<EOF > /usr/share/applications/calamares.desktop
+[Desktop Entry]
+Type=Application
+Version=0.1
+Name=Install PluriOS OIT
+Exec=sudo -E /usr/bin/calamares-launch-normal
+Comment=Calamares — System Installer
+Comment[es]=Calamares — Instalador del Sistema
+Icon=ubuntu-unity-installer
+Terminal=false
+StartupNotify=true
+Categories=System;PluriOS;
+Keywords=installer;calamares;system;
+EOF
+
+# remove rustdesk
+#rm -f /usr/share/applications/rustdesk.desktop
+rm -f /usr/share/applications/rustdesk-link.desktop
+# add launcher rustdesk
+
+cat <<EOF > /usr/share/applications/rustdesk.desktop
+[Desktop Entry]
+Name=RustDesk
+GenericName=Remote Desktop
+Comment=Remote Desktop
+Exec=rustdesk %u
+Icon=rustdesk
+Terminal=false
+Type=Application
+StartupNotify=true
+Categories=system;PluriOS;
+Keywords=internet;
+Actions=new-window;
+
+X-Desktop-File-Install-Version=0.23
+
+[Desktop Action new-window]
+Name=Open a New Window
+Exec=rustdesk %u
+EOF
+
+systemctl stop rustdesk 2>/dev/null
+systemctl stop rustdesk-link 2>/dev/null
+systemctl disable rustdesk 2>/dev/null
+systemctl disable rustdesk-link 2>/dev/null
+
+# generate snakeoil
+make-ssl-cert generate-default-snakeoil --force-overwrite
+
+# delete list packages
+rm -rf /var/lib/apt/lists/* 2>/dev/null
+
+# Generate filesystem.manifest
+dpkg-query -W --showformat='${Package} ${Version}\n' > /filesystem.manifest
+
