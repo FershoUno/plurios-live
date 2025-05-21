@@ -52,4 +52,6 @@ apt remove --purge --autoremove -y \
 
 apt remove --purge --autoremove -y aspell-en wamerican
 
+apt remove --purge --autoremove -y lp-solve 2>/dev/null 
+
 apt autoremove -y

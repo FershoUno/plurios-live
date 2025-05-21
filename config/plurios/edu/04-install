@@ -1,0 +1,103 @@
+#!/bin/bash
+
+echo "
+##################
+# run 04-install #
+##################
+"
+apt-get update
+
+# Grub efi signed, etc
+apt-get install -y grub-common grub-gfxpayload-lists grub-pc grub-pc-bin grub2 grub-efi-amd64-signed shim-signed \
+	plymouth-x11
+
+# Reinstallation
+apt-get install -y --reinstall fonts-ubuntu
+
+# live tools
+apt-get install -y casper live-boot live-tools ubiquity-casper mtools
+
+# system
+apt-get install -y finalrd dkms bcmwl-kernel-source sl-modem-dkms fonts-cantarell ntfs-3g apparmor apparmor-utils \
+	libnotify-bin language-pack-gnome-es xfsprogs
+
+# locales
+DEBIAN_FRONTEND=noninteractive apt-get install -y locales
+
+# calamares
+apt-get install -y --install-recommends calamares-settings-ubuntu-unity
+update-initramfs -c -k $(ls /lib/modules)
+
+# Internet
+apt-get install -y firefox firefox-l10n-es-mx thunderbird thunderbird-locale-es axel
+
+# Tools
+apt-get install -y htop terminator curl gparted planner
+
+# Multimedia
+apt-get install -y vlc eog rhythmbox
+
+# Office
+apt-get install -y libreoffice libreoffice-l10n-es mousepad
+
+# Graphics
+apt-get install -y flameshot xournalpp open-vm-tools open-vm-tools-desktop libvirt-glib-1.0-0
+
+# Development
+apt-get install -y git 
+
+# =============
+# Custom install
+# =============
+# plurios-icons
+wget -q --show-progress "https://github.com/FershoUno/plurios-icons/releases/download/v0.1/plurios-icons_0.1_all.deb"
+apt-get install ./plurios*.deb
+rm -f ./plurios*.deb
+
+# rustdesk
+USERNAME="rustdesk"
+REPOSITORY="rustdesk"
+GIT="$USERNAME/$REPOSITORY"
+URL=$(curl -s https://api.github.com/repos/$GIT/releases/latest | jq -r '.assets[] | select(.name | endswith("deb") and contains("x86_64.")) | .browser_download_url')
+wget -q --show-progress $URL
+apt-get install ./rust*.deb -y
+rm -f ./rust*.deb
+
+# drawio-desktop
+cat <<EOF > /etc/apparmor.d/drawio
+# This profile allows everything and only exists to give the
+# application a name instead of having the label "unconfined"
+
+# Manually created 2025-02-25 to fix sandbox errors
+
+abi <abi/4.0>,
+include <tunables/global>
+
+profile drawio /opt/drawio/drawio flags=(unconfined) {
+  userns,
+
+  # Site-specific additions and overrides. See local/README for details.
+  include if exists <local/drawio>
+}
+EOF
+#
+#systemctl enable apparmor 2>/dev/null
+#systemctl start apparmor 2>/dev/null
+#apparmor_parser -r /etc/apparmor.d/drawio 2>/dev/null
+#systemctl reload apparmor 2>/dev/null
+#systemctl restart apparmor 2>/dev/null
+#
+## draw.io
+#USERNAME="jgraph"
+#REPOSITORY="drawio-desktop"
+#GIT="$USERNAME/$REPOSITORY"
+#URL=$(curl -s https://api.github.com/repos/$GIT/releases/latest | jq -r '.assets[] | select(.name | endswith(".deb") and contains("amd64")) | .browser_download_url')
+#wget -q --show-progress $URL
+#apt-get install ./drawio*.deb -y
+#rm -f ./drawio*.deb
+#
+#
+#apt-get upgrade -y
+#apt autoremove -y
+#
+

@@ -19,7 +19,7 @@ apt-get install -y casper live-boot live-tools ubiquity-casper mtools
 
 # system
 apt-get install -y finalrd dkms bcmwl-kernel-source sl-modem-dkms fonts-cantarell ntfs-3g apparmor apparmor-utils \
-	libnotify-bin language-pack-gnome-es
+	libnotify-bin language-pack-gnome-es xfsprogs
 
 # locales
 DEBIAN_FRONTEND=noninteractive apt-get install -y locales

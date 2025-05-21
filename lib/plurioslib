@@ -71,12 +71,13 @@ function compress_content_filesystem(){
 }
 
 function copy_directories_and_files(){
-  cp -r $SCRIPT_DIR/$DIR_CONF_PLURIOS $CUSTOM_DIR/
+  cp -r $DIR_EDITIONS/$VARIANT_ISO $CUSTOM_DIR/plurios
+
   cp $SCRIPT_DIR/$CONF_PREPARE_ISO $CUSTOM_DIR/
   cp -r $SCRIPT_DIR/$DIR_CONF_IMAGE $CUSTOM_DIR/
   cp -a $SCRIPT_DIR/$CONF_DOTFILES/. $CUSTOM_DIR/etc/skel/
   cat $SCRIPT_DIR/$DIR_WALLPAPER/watermark.png > $CUSTOM_DIR/usr/share/plymouth/themes/ubuntucinnamon-spinner/watermark.png
-  cat $SCRIPT_DIR/$DIR_WALLPAPER/plurios25-01.png > $CUSTOM_DIR/usr/share/backgrounds/ubuntucinnamon/noble/ubuntu_cinnamon_noble_numbat.jpg
+  cat $SCRIPT_DIR/$DIR_WALLPAPER/$VARIANT_ISO.png > $CUSTOM_DIR/usr/share/backgrounds/ubuntucinnamon/noble/ubuntu_cinnamon_noble_numbat.jpg
 }
 
 function copy_calamares(){

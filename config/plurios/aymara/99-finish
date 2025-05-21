@@ -66,6 +66,8 @@ make-ssl-cert generate-default-snakeoil --force-overwrite
 # delete list packages
 rm -rf /var/lib/apt/lists/* 2>/dev/null
 
+apt remove --purge --autoremove lp-solve -y 2>/dev/null
+
 # Generate filesystem.manifest
 dpkg-query -W --showformat='${Package} ${Version}\n' > /filesystem.manifest
 

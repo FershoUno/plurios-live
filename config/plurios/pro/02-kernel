@@ -1,0 +1,10 @@
+#!/bin/bash
+
+echo "
+#################
+# run 02-kernel #
+#################
+"
+
+apt-get update
+apt-get install -y linux-image-generic

@@ -32,7 +32,7 @@ cp /usr/lib/grub/x86_64-efi-signed/grubx64.efi.signed isolinux/grubx64.efi
     done
 )
 
-grub-mkstandalone ..format=i386-pc --output=isolinux/core.img \
+grub-mkstandalone --format=i386-pc --output=isolinux/core.img \
     --install-modules="linux16 linux normal iso9660 biosdisk search" \
     --modules="linux16 linux normal iso9660 biosdisk search" \
     --locales="" --fonts="" \

@@ -1,0 +1,161 @@
+#!/bin/bash
+
+echo "
+#####################
+# run 05-add-config #
+#####################
+"
+
+#=========================
+# set the system language
+#=========================
+sed -i 's/^# *\(es_BO.UTF-8 UTF-8\)/\1/' /etc/locale.gen
+echo "LANG=es_BO.UTF-8" | tee /etc/default/locale
+locale-gen
+update-locale LANG=es_BO.UTF-8 LANGUAGE=es_BO.UTF-8 LC_ALL=es_BO.UTF-8
+export LANG=es_BO.UTF-8
+export LANGUAGE=es_BO.UTF-8
+export LC_ALL=es_BO.UTF-8
+
+# ========================
+# set the timezone (America/La_Paz)
+# ========================
+echo "America/La_Paz" > /etc/timezone
+ln -sf /usr/share/zoneinfo/America/La_Paz /etc/localtime
+dpkg-reconfigure -f noninteractive tzdata
+
+# ========================
+# renaming directories
+# ========================
+cat <<EOF >/etc/xdg/user-dirs.defaults
+# Default settings for user directories
+#
+# The values are relative pathnames from the home directory and
+# will be translated on a per-path-element basis into the users locale
+DESKTOP=Escritorio
+DOWNLOAD=Descargas
+TEMPLATES=Plantillas
+PUBLICSHARE=Público
+DOCUMENTS=Documentos
+MUSIC=Música
+PICTURES=Imágenes
+VIDEOS=Vídeos
+# Another alternative is:
+#MUSIC=Documents/Music
+#PICTURES=Documents/Pictures
+#VIDEOS=Documents/Videos
+EOF
+
+# ========================
+# set the keyboard language (Spanish/Latin American)
+# ========================
+echo 'XKBLAYOUT="latam"' > /etc/default/keyboard
+echo 'XKBMODEL="pc105"' >> /etc/default/keyboard
+echo 'XKBVARIANT=""' >> /etc/default/keyboard
+echo 'XKBOPTIONS=""' >> /etc/default/keyboard
+
+# ========================
+# disable do-release-upgrade
+# ========================
+sed -i "s/Prompt=lts/Prompt=never/g" /etc/update-manager/release-upgrades
+
+# ========================
+# comment on cinnamon option
+# ========================
+sed -i '/^\s*\(document-font-name\|display-overview-map\|monospace-font-name\)/s/^/#/' /usr/share/glib-2.0/schemas/10_ubuntucinnamon-environment.gschema.override
+glib-compile-schemas /usr/share/glib-2.0/schemas/
+
+# ========================
+# set font console
+# ========================
+#cat << EOF > /etc/default/console-setup
+#CHARMAP="UTF-8"
+#CODESET="Lat15"
+#FONTFACE="Fixed"
+#FONTSIZE="16x32"
+#EOF
+#
+#setupcon
+update-initramfs -u
+
+# ========================
+# remove the snapd path from the environment file
+# ========================
+sed -i 's#:\/snap/bin##' /etc/environment
+
+# ========================
+# add plurios menu
+# ========================
+
+PART1=$(head -n 200 /etc/xdg/menus/cinnamon-applications.menu)
+PART2=$(tail -n +202 /etc/xdg/menus/cinnamon-applications.menu)
+echo "$PART1" > /etc/xdg/menus/cinnamon-applications.menu
+cat <<EOF >> /etc/xdg/menus/cinnamon-applications.menu
+  <Menu>
+    <Name>PluriOS</Name>
+    <Directory>cinnamon-PluriOS.directory</Directory>
+      <Include>
+        <And>
+          <Category>PluriOS</Category>
+        </And>
+      </Include>
+  </Menu>
+EOF
+echo "$PART2" >> /etc/xdg/menus/cinnamon-applications.menu
+
+
+# ========================
+# configures the values of the lsb_release and os-release file
+# ========================
+sed -i 's|^DISTRIB_DESCRIPTION=.*|DISTRIB_DESCRIPTION="PluriOS Metadistro Linux Boliviana"|' /etc/lsb-release
+sed -i 's|^PRETTY_NAME=.*|PRETTY_NAME="PluriOS Metadistro Linux Boliviana"|' /etc/os-release
+sed -i 's|^PRETTY_NAME=.*|PRETTY_NAME="PluriOS Metadistro Linux Boliviana"|' /usr/lib/os-release
+sed -i 's|^NAME=.*|NAME="PluriOS"|' /etc/os-release
+sed -i 's|^VERSION_ID=.*|VERSION_ID="2.5"|' /etc/os-release
+sed -i 's|^VERSION=.*|VERSION="2.5 (Metadistro Linux Boliviana)"|' /etc/os-release
+
+cat <<EOF >/etc/hostname
+plurios
+EOF
+
+cat <<EOF >/etc/hosts
+127.0.0.1 localhost
+127.0.1.1 plurios
+
+# The following lines are desirable for IPv6 capable hosts
+::1     ip6-localhost ip6-loopback
+fe00::0 ip6-localnet
+ff00::0 ip6-mcastprefix
+ff02::1 ip6-allnodes
+ff02::2 ip6-allrouters
+ff02::3 ip6-allhosts
+EOF
+
+# ========================
+# config wallpaper
+# ========================
+
+#mkdir -p /etc/dconf/db/local.d/
+#cat <<EOF >/etc/dconf/db/local.d/00-brackground
+#[desktop/background]
+#picture-uri='file:///usr/share/backgrounds/ubuntucinnamon/noble/plurios25-01.svg'
+#EOF
+
+#dconf update 2>/dev/null
+
+# ========================
+# grub configuration
+# ========================
+
+GRUB_FILE="/etc/default/grub"
+sed -i "s|^GRUB_DISTRIBUTOR=.*|GRUB_DISTRIBUTOR='PluriOS Metadistro Linux Boliviana'|" "$GRUB_FILE"
+#sed -i "s|^GRUB_TIMEOUT=.*|GRUB_TIMEOUT=7|" "$GRUB_FILE"
+
+
+# ===================
+# udpate fonts
+# ===================
+
+fc-cache -fv
+
+apt-get upgrade -y
