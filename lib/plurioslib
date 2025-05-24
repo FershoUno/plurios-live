@@ -70,15 +70,40 @@ function compress_content_filesystem(){
         -e "swapfile"
 }
 
+function load_info_release(){
+PLURIOS_RELEASE_FILE="$CUSTOM_DIR/etc/plurios-release"
+
+if [ ! -f "$PLURIOS_RELEASE_FILE" ]
+then
+    echo "Error: $PLURIOS_FILE does not exist."
+    exit 1
+fi
+
+ID_FILE="$(echo "${NAME_ISO^}";)" && ID_FILE="${ID_FILE:0:-2}$(echo "${ID_FILE: -2}" | tr '[:lower:]' '[:upper:]')"
+
+RELEASE_FILE="$VERSION_ISO"
+CODENAME_FILE="${VARIANT_ISO^}"
+DESCRIPTION_FILE='"Metadistro Linux Boliviana"'
+
+sed -i "s/^DISTRIB_ID=.*/DISTRIB_ID=${ID_FILE}/" "$PLURIOS_RELEASE_FILE"
+sed -i "s/^DISTRIB_RELEASE=.*/DISTRIB_RELEASE=${RELEASE_FILE}/" "$PLURIOS_RELEASE_FILE"
+sed -i "s/^DISTRIB_CODENAME=.*/DISTRIB_CODENAME=${CODENAME_FILE}/" "$PLURIOS_RELEASE_FILE"
+sed -i "s/^DISTRIB_DESCRIPTION=.*/DISTRIB_DESCRIPTION=${DESCRIPTION_FILE}/" "$PLURIOS_RELEASE_FILE"
+
+echo "GRUB_DISTRIBUTOR='${ID_FILE} ${CODENAME_FILE} ${RELEASE_FILE} \${DESCRIPTION_FILE}\'" > "$CUSTOM_DIR/etc/default/grub.d/osname.cfg"
+
+}
+
 function copy_directories_and_files(){
   cp -r $DIR_EDITIONS/$VARIANT_ISO $CUSTOM_DIR/plurios
+  cp -a $SCRIPT_DIR/$DIR_ETC/. $CUSTOM_DIR/etc
   cp $SCRIPT_DIR/$CONF_PREPARE_ISO $CUSTOM_DIR/
   cp -r $SCRIPT_DIR/$DIR_CONF_IMAGE $CUSTOM_DIR/
   cp -a $SCRIPT_DIR/$CONF_DOTFILES/. $CUSTOM_DIR/etc/skel/
   cat $SCRIPT_DIR/$DIR_WALLPAPER/watermark.png > $CUSTOM_DIR/usr/share/plymouth/themes/ubuntucinnamon-spinner/watermark.png
   cat $SCRIPT_DIR/$DIR_WALLPAPER/$VARIANT_ISO.png > $CUSTOM_DIR/usr/share/backgrounds/ubuntucinnamon/noble/ubuntu_cinnamon_noble_numbat.jpg
-  cat $SCRIPT_DIR/$CONF_GRUB > $CUSTOM_DIR/etc/default/grub
-  cat $SCRIPT_DIR/$CONF_GRUB > $CUSTOM_DIR/usr/share/grub/default/grub
+#  cat $SCRIPT_DIR/$CONF_GRUB > $CUSTOM_DIR/etc/default/grub
+#  cat $SCRIPT_DIR/$CONF_GRUB > $CUSTOM_DIR/usr/share/grub/default/grub
 }
 
 function copy_calamares(){
@@ -144,6 +169,7 @@ function load_filesystem(){
   mount_chroot
   mount_apt
   copy_directories_and_files
+  load_info_release
   run_chroot
 }
 
