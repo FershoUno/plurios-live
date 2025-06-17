@@ -111,8 +111,8 @@ sed -i 's|^DISTRIB_DESCRIPTION=.*|DISTRIB_DESCRIPTION="PluriOS Metadistro Linux 
 sed -i 's|^PRETTY_NAME=.*|PRETTY_NAME="PluriOS Metadistro Linux Boliviana"|' /etc/os-release
 sed -i 's|^PRETTY_NAME=.*|PRETTY_NAME="PluriOS Metadistro Linux Boliviana"|' /usr/lib/os-release
 sed -i 's|^NAME=.*|NAME="PluriOS"|' /etc/os-release
-sed -i 's|^VERSION_ID=.*|VERSION_ID="2.5"|' /etc/os-release
-sed -i 's|^VERSION=.*|VERSION="2.5 (Metadistro Linux Boliviana)"|' /etc/os-release
+#sed -i 's|^VERSION_ID=.*|VERSION_ID="2.5"|' /etc/os-release
+#sed -i 's|^VERSION=.*|VERSION="2.5 (Metadistro Linux Boliviana)"|' /etc/os-release
 
 cat <<EOF >/etc/hostname
 plurios
@@ -147,8 +147,8 @@ EOF
 # grub configuration
 # ========================
 
-GRUB_FILE="/etc/default/grub"
-sed -i "s|^GRUB_DISTRIBUTOR=.*|GRUB_DISTRIBUTOR='PluriOS Metadistro Linux Boliviana'|" "$GRUB_FILE"
+#GRUB_FILE="/etc/default/grub"
+#sed -i "s|^GRUB_DISTRIBUTOR=.*|GRUB_DISTRIBUTOR='PluriOS Metadistro Linux Boliviana'|" "$GRUB_FILE"
 #sed -i "s|^GRUB_TIMEOUT=.*|GRUB_TIMEOUT=7|" "$GRUB_FILE"
 
 

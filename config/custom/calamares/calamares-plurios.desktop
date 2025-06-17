@@ -1,7 +1,7 @@
 [Desktop Entry]
 Type=Application
 Version=0.1
-Name=Install PluriOS OIT
+Name=Instalar PluriOS OIT
 Exec=sudo -E /usr/bin/calamares-launch-normal
 Comment=Calamares — System Installer
 Comment[es]=Calamares — Instalador del Sistema

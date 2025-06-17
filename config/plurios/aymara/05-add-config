@@ -159,3 +159,6 @@ sed -i "s|^GRUB_DISTRIBUTOR=.*|GRUB_DISTRIBUTOR='PluriOS Metadistro Linux Bolivi
 fc-cache -fv
 
 apt-get upgrade -y
+
+# Configure Language
+plurios -l ay

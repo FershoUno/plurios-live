@@ -6,8 +6,11 @@ echo "
 #####################
 "
 apt-get update && apt-get upgrade -y
-apt autoremove -y
+#apt autoremove -y
 
+# Add PluriOS Repository
+wget -q https://nlbol.github.io/deb/plurios.gpg -O- | gpg --dearmor > /etc/apt/trusted.gpg.d/plurios.gpg
+echo "deb https://nlbol.github.io/deb/plurios plurios main" | tee /etc/apt/sources.list.d/plurios.list
 
 # Add Thunderbird
 add-apt-repository ppa:mozillateam/ppa -y

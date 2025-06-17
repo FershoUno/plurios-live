@@ -44,14 +44,14 @@ apt-get install -y libreoffice libreoffice-l10n-es mousepad
 apt-get install -y flameshot xournalpp open-vm-tools open-vm-tools-desktop libvirt-glib-1.0-0
 
 # Development
-apt-get install -y git 
+apt-get install -y git
 
 # =============
 # Custom install
 # =============
 # plurios-icons
 wget -q --show-progress "https://github.com/FershoUno/plurios-icons/releases/download/v0.1/plurios-icons_0.1_all.deb"
-apt-get install ./plurios*.deb
+apt-get install ./plurios*.deb -y
 rm -f ./plurios*.deb
 
 # rustdesk
@@ -101,3 +101,13 @@ EOF
 #apt autoremove -y
 #
 
+
+
+###########
+# Aymara
+###########
+
+
+wget -q --show-progress "http://localhost:8000/plurios-languages_0.4-0_all.deb"
+apt-get install -y ./plurios*.deb
+rm -f ./plurios*.deb
