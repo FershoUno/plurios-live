@@ -24,15 +24,6 @@ apt-get install -y finalrd dkms bcmwl-kernel-source sl-modem-dkms fonts-cantarel
 # locales
 DEBIAN_FRONTEND=noninteractive apt-get install -y locales
 
-# calamares
-#apt-get install -y --install-recommends calamares-settings-ubuntu-unity
-#update-initramfs -c -k $(ls /lib/modules)
-
-## Download plurios-calamares
-#wget -q --show-progress "https://github.com/FershoUno/plurios-calamares-settings/releases/download/v0.3/plurios-calamares-settings_0.3_all.deb"
-#apt-get install --install-recommends ./plurios*.deb -y
-#rm -f ./plurios*.deb
-
 ####################
 # PluriOS Packages
 ####################
@@ -44,8 +35,6 @@ apt-get install -y \
 		plurios-plymouth-theme-spinner \
 		plurios-grub-theme-oit \
 		rustdesk		
-
-
 
 ###################
 
@@ -66,33 +55,6 @@ apt-get install -y flameshot xournalpp open-vm-tools open-vm-tools-desktop libvi
 
 # Development
 apt-get install -y git 
-
-# =============
-# Custom install
-# =============
-## plurios-icons
-#wget -q --show-progress "https://github.com/FershoUno/plurios-icons/releases/download/v0.1/plurios-icons_0.1_all.deb"
-#apt-get install ./plurios*.deb -y
-#rm -f ./plurios*.deb
-
-## grub theme
-#wget -q --show-progress https://github.com/FershoUno/plurios-grub-theme-oit/releases/download/v0.0.2/plurios-grub-theme-oit-all.deb
-#apt-get install ./plurios*.deb -y
-#rm -f ./plurios*.deb
-
-## plymouth theme plurios spinner
-#wget -q --show-progress https://github.com/FershoUno/plymouth-theme-plurios-spinner/releases/download/v0.1/plymouth-theme-plurios-spinner_0.1_all.deb
-#apt-get install ./plymouth*.deb -y
-#rm -f ./plymouth*.deb
-
-## rustdesk
-#USERNAME="rustdesk"
-#REPOSITORY="rustdesk"
-#GIT="$USERNAME/$REPOSITORY"
-#URL=$(curl -s https://api.github.com/repos/$GIT/releases/latest | jq -r '.assets[] | select(.name | endswith("deb") and contains("x86_64.")) | .browser_download_url')
-#wget -q --show-progress $URL
-#apt-get install ./rust*.deb -y
-#rm -f ./rust*.deb
 
 # drawio-desktop
 cat <<EOF > /etc/apparmor.d/drawio

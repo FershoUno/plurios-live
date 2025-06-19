@@ -65,17 +65,6 @@ sed -i "s/Prompt=lts/Prompt=never/g" /etc/update-manager/release-upgrades
 sed -i '/^\s*\(document-font-name\|display-overview-map\|monospace-font-name\)/s/^/#/' /usr/share/glib-2.0/schemas/10_ubuntucinnamon-environment.gschema.override
 glib-compile-schemas /usr/share/glib-2.0/schemas/
 
-# ========================
-# set font console
-# ========================
-#cat << EOF > /etc/default/console-setup
-#CHARMAP="UTF-8"
-#CODESET="Lat15"
-#FONTFACE="Fixed"
-#FONTSIZE="16x32"
-#EOF
-#
-#setupcon
 update-initramfs -u
 
 # ========================
@@ -130,27 +119,6 @@ ff02::1 ip6-allnodes
 ff02::2 ip6-allrouters
 ff02::3 ip6-allhosts
 EOF
-
-# ========================
-# config wallpaper
-# ========================
-
-#mkdir -p /etc/dconf/db/local.d/
-#cat <<EOF >/etc/dconf/db/local.d/00-brackground
-#[desktop/background]
-#picture-uri='file:///usr/share/backgrounds/ubuntucinnamon/noble/plurios25-01.svg'
-#EOF
-
-#dconf update 2>/dev/null
-
-# ========================
-# grub configuration
-# ========================
-
-#GRUB_FILE="/etc/default/grub"
-#sed -i "s|^GRUB_DISTRIBUTOR=.*|GRUB_DISTRIBUTOR='PluriOS Metadistro Linux Boliviana'|" "$GRUB_FILE"
-#sed -i "s|^GRUB_TIMEOUT=.*|GRUB_TIMEOUT=7|" "$GRUB_FILE"
-
 
 # ===================
 # udpate fonts
