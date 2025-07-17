@@ -8,15 +8,27 @@ echo "
 apt-get update && apt-get upgrade -y
 #apt autoremove -y
 
+# ========================
 # Add PluriOS Repository
+# ========================
 wget -q https://nlbol.github.io/deb/plurios.gpg -O- | gpg --dearmor > /etc/apt/trusted.gpg.d/plurios.gpg
 echo "deb https://nlbol.github.io/deb/plurios plurios main" | tee /etc/apt/sources.list.d/plurios.list
+
+cat <<EOF> /etc/apt/preferences.d/plurios
+Package: *
+Pin: release l=PluriOS Repository
+Pin-Priority: 1001
+EOF
+
+# ========================
+# Add PluriOS Repository
+# ========================
 
 # Add Thunderbird
 add-apt-repository ppa:mozillateam/ppa -y
 apt-get update
 
-cat <<EOF >/etc/apt/preferences.d/mozillateamppa
+cat <<EOF > /etc/apt/preferences.d/mozillateamppa
 Package: thunderbird*
 Pin: release o=LP-PPA-mozillateam
 Pin-Priority: 1001

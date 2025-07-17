@@ -90,15 +90,12 @@ sed -i "s/^DISTRIB_CODENAME=.*/DISTRIB_CODENAME=${CODENAME_FILE}/" "$PLURIOS_REL
 sed -i "s/^DISTRIB_DESCRIPTION=.*/DISTRIB_DESCRIPTION=${DESCRIPTION_FILE}/" "$PLURIOS_RELEASE_FILE"
 
 echo "GRUB_DISTRIBUTOR='${ID_FILE} ${CODENAME_FILE} ${RELEASE_FILE}'" > "$CUSTOM_DIR/etc/default/grub.d/osname.cfg"
+
+# Enable os-prober
+echo "GRUB_DISABLE_OS_PROBER=false" >> "$CUSTOM_DIR/etc/default/grub.d/osprober.cfg"
 }
 
 function copy_directories_and_files(){
-#  cp -r $DIR_EDITIONS/$VARIANT_ISO $CUSTOM_DIR/plurios
-#  cp -a $SCRIPT_DIR/$DIR_ETC/. $CUSTOM_DIR/etc
-#  cp $SCRIPT_DIR/$CONF_PREPARE_ISO $CUSTOM_DIR/
-#  cp -r $SCRIPT_DIR/$DIR_CONF_IMAGE $CUSTOM_DIR/
-#  cp -a $SCRIPT_DIR/$CONF_DOTFILES/. $CUSTOM_DIR/etc/skel/
-
   rsync -a --chown=root:root --chmod=D755,F644 "$DIR_EDITIONS/$VARIANT_ISO/" "$CUSTOM_DIR/plurios"
   rsync -a --chown=root:root --chmod=D755,F644 "$SCRIPT_DIR/$DIR_ETC/." "$CUSTOM_DIR/etc/"
   rsync -a --chown=root:root --chmod=D755,F644 "$SCRIPT_DIR/$CONF_PREPARE_ISO" "$CUSTOM_DIR/"
@@ -107,11 +104,6 @@ function copy_directories_and_files(){
 
   cat $SCRIPT_DIR/$DIR_WALLPAPER/$VARIANT_ISO.png > $CUSTOM_DIR/usr/share/backgrounds/ubuntucinnamon/noble/ubuntu_cinnamon_noble_numbat.jpg
 }
-
-#function copy_calamares(){
-#  rm -rf $CUSTOM_DIR/etc/calamares/
-#  cp -r $SCRIPT_DIR/$DIR_CONF_CALAMARES/$DIR_CALAMARES/calamares $CUSTOM_DIR/etc/
-#}
 
 function calculate_filesystem_size(){
   du -sx --block-size=1 $IMAGE_DIR/casper/filesystem.squashfs | cut -f1 > $IMAGE_DIR/casper/filesystem.size

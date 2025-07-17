@@ -9,16 +9,23 @@ apt-get update
 
 # Grub efi signed, etc
 apt-get install -y grub-common grub-gfxpayload-lists grub-pc grub-pc-bin grub2 grub-efi-amd64-signed shim-signed \
-	plymouth-x11
 
 # Reinstallation
-apt-get install -y --reinstall fonts-ubuntu
+apt-get install -y --reinstall \
+	fonts-ubuntu \
+
+# Cinnamon packages
+apt-get install -y \
+	cinnamon \
+	cinnamon-common \
+	cinnamon-settings-daemon \
+	cinnamon-settings-daemon-dev
 
 # live tools
 apt-get install -y casper live-boot live-tools ubiquity-casper mtools
 
 # system
-apt-get install -y finalrd dkms bcmwl-kernel-source sl-modem-dkms fonts-cantarell ntfs-3g apparmor apparmor-utils \
+apt-get install -y finalrd fonts-cantarell ntfs-3g apparmor apparmor-utils \
 	libnotify-bin language-pack-gnome-es xfsprogs
 
 # locales
@@ -29,7 +36,9 @@ DEBIAN_FRONTEND=noninteractive apt-get install -y locales
 ####################
 apt-get install -y plurios-icons 
 
+# ------------------
 # Calamares PluriOS
+# ------------------
 apt-get install -y \
 		plurios-calamares-settings \
 		plurios-plymouth-theme-spinner \
@@ -73,23 +82,4 @@ profile drawio /opt/drawio/drawio flags=(unconfined) {
   include if exists <local/drawio>
 }
 EOF
-#
-#systemctl enable apparmor 2>/dev/null
-#systemctl start apparmor 2>/dev/null
-#apparmor_parser -r /etc/apparmor.d/drawio 2>/dev/null
-#systemctl reload apparmor 2>/dev/null
-#systemctl restart apparmor 2>/dev/null
-#
-## draw.io
-#USERNAME="jgraph"
-#REPOSITORY="drawio-desktop"
-#GIT="$USERNAME/$REPOSITORY"
-#URL=$(curl -s https://api.github.com/repos/$GIT/releases/latest | jq -r '.assets[] | select(.name | endswith(".deb") and contains("amd64")) | .browser_download_url')
-#wget -q --show-progress $URL
-#apt-get install ./drawio*.deb -y
-#rm -f ./drawio*.deb
-#
-#
-#apt-get upgrade -y
-#apt autoremove -y
-#
+
