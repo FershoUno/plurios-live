@@ -1,7 +1,7 @@
 #!/bin/bash
 
 function setup_workspace(){
-  mkdir -p $MNT_DIR $EXTRACT_DIR $CUSTOM_DIR $APT_DIR $ISO_DIR
+  mkdir -p $MNT_DIR $EXTRACT_DIR $CUSTOM_DIR $APT_DIR $ISO_DIR $TEMPLATE_DIR
 }
 
 function mount_chroot(){
@@ -23,8 +23,6 @@ function umount_chroot(){
 function run_chroot(){
   chroot $CUSTOM_DIR bash -c 'for script in plurios/*; do bash -x "$script"; done'
   chroot $CUSTOM_DIR bash -c 'rm -rf /plurios'
-  chroot $CUSTOM_DIR bash -c 'bash -x /prepare'
-  chroot $CUSTOM_DIR bash -c 'rm -rf /prepare'
 }
 
 function mount_iso(){
@@ -47,12 +45,29 @@ function copy_content_iso(){
   rsync -aAXH --numeric-ids "$MNT_DIR"/ $EXTRACT_DIR
 }
 
+function clean_custom_dir(){
+  find $CUSTOM_DIR -mindepth 1 -delete
+}
+
+function check_compression(){
+  if [ $COMPRESSION == "zstd" ]; then
+    OPTS_COMPRESSION="$OPTS_ZSTD"
+  elif [ $COMPRESSON == "xz" ]; then
+    OPTS_COMPRESSION="$OPTS_XZ"
+  fi
+}
+
 function extract(){
-  unsquashfs -f -d $CUSTOM_DIR $EXTRACT_DIR/casper/$1
+  unsquashfs -f -d "$@"
 }
 
 function extract_content_filesystem(){
-  extract "minimal.squashfs"
+  # use: extract [DIR_DST] [PATH_FILE]
+  extract $CUSTOM_DIR "$EXTRACT_DIR/casper/minimal.squashfs"
+}
+
+function extract_content_filesystem_template(){
+  extract $CUSTOM_DIR $TEMPLATE_DIR/filesystem.squashfs
 }
 
 function compress_content_filesystem(){
@@ -60,8 +75,9 @@ function compress_content_filesystem(){
   mv $CUSTOM_DIR/filesystem.manifest $IMAGE_DIR/casper/
   rmdir $CUSTOM_DIR/{bin.usr-is-merged,lib.usr-is-merged,sbin.usr-is-merged}
 
- mksquashfs $CUSTOM_DIR $IMAGE_DIR/casper/filesystem.squashfs -comp $COMPRESSION \
-	-Xcompression-level 19 -b 1024K -always-use-fragments -noappend -quiet -progress \
+ check_compression
+
+ mksquashfs $CUSTOM_DIR $IMAGE_DIR/casper/filesystem.squashfs -comp $COMPRESSION $OPTS_COMPRESSION \
         -e "var/cache/apt/archives/*" \
         -e "root/*" \
         -e "root/.*" \
@@ -73,8 +89,7 @@ function compress_content_filesystem(){
 function load_info_release(){
 PLURIOS_RELEASE_FILE="$CUSTOM_DIR/etc/plurios-release"
 
-if [ ! -f "$PLURIOS_RELEASE_FILE" ]
-then
+if [ ! -f "$PLURIOS_RELEASE_FILE" ]; then
     echo "Error: $PLURIOS_RELEASE_FILE does not exist."
     exit 1
 fi
@@ -95,10 +110,48 @@ echo "GRUB_DISTRIBUTOR='${ID_FILE} ${CODENAME_FILE} ${RELEASE_FILE}'" > "$CUSTOM
 echo "GRUB_DISABLE_OS_PROBER=false" >> "$CUSTOM_DIR/etc/default/grub.d/osprober.cfg"
 }
 
+check_load_iso(){
+  if ! [[ -n "$ISO_FILE" && -f "$ISO_FILE" && "${ISO_FILE##*.}" == "iso" ]]; then
+    echo "Error: Use an existing file and it is in ISO format"
+    echo "Use: bash $0 ubuntucinnamon-24.04.2-desktop-amd64.iso"
+    exit 1
+fi
+}
+
+function copy_rsync(){
+  rsync -a --chown=root:root --chmod=D755,F644 "$@"
+}
+
+function copy_core(){
+  copy_rsync "$SCRIPT_DIR/$DIR_CONF_CORE/" "$CUSTOM_DIR/plurios"
+}
+
+function copy_plurios(){
+  copy_rsync "$SCRIPT_DIR/$DIR_CONF_PLURIOS/$VARIANT_ISO/" "$CUSTOM_DIR/plurios"
+}
+
+function copy_prepare(){
+  copy_rsync "$SCRIPT_DIR/$DIR_CONF_PREPARE_ISO/" "$CUSTOM_DIR/plurios"
+}
+
+function save_template_squashfs(){
+  check_compression
+   mksquashfs $CUSTOM_DIR $TEMPLATE_DIR/filesystem.squashfs -comp $COMPRESSION $OPTS_COMPRESSION \
+        -e "var/cache/apt/archives/*" \
+        -e "root/*" \
+        -e "root/.*" \
+        -e "tmp/*" \
+        -e "tmp/.*" \
+        -e "swapfile"
+}
+
+function extract_squashfs_for_template(){
+  extract $TEMPLATE_DIR $EXTRACT_DIR/casper/minimal.squashfs
+}
+
 function copy_directories_and_files(){
   rsync -a --chown=root:root --chmod=D755,F644 "$DIR_EDITIONS/$VARIANT_ISO/" "$CUSTOM_DIR/plurios"
   rsync -a --chown=root:root --chmod=D755,F644 "$SCRIPT_DIR/$DIR_ETC/." "$CUSTOM_DIR/etc/"
-  rsync -a --chown=root:root --chmod=D755,F644 "$SCRIPT_DIR/$CONF_PREPARE_ISO" "$CUSTOM_DIR/"
   rsync -a --chown=root:root "$SCRIPT_DIR/$DIR_CONF_IMAGE" "$CUSTOM_DIR/"
   rsync -a --chown=root:root --chmod=D755,F644 "$SCRIPT_DIR/$CONF_DOTFILES/." "$CUSTOM_DIR/etc/skel/"
 
@@ -158,12 +211,28 @@ function get_content_iso(){
   umount_iso
 }
 
-function load_filesystem(){
+function create_template_squashfs(){
   extract_content_filesystem
+  mount_chroot
+  copy_core
+  run_chroot
+  umount_chroot
+  save_template_squashfs
+  clean_custom_dir
+}
+
+function load_filesystem(){
+  extract_content_filesystem_template
   mount_chroot
   mount_apt
   copy_directories_and_files
   load_info_release
+}
+
+function exec_chroot(){
+  copy_plurios
+  run_chroot
+  copy_prepare
   run_chroot
 }
 
