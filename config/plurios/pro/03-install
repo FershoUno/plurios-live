@@ -11,8 +11,7 @@ apt-get update
 apt-get install -y grub-common grub-gfxpayload-lists grub-pc grub-pc-bin grub2 grub-efi-amd64-signed shim-signed \
 
 # Reinstallation
-apt-get install -y --reinstall \
-	fonts-ubuntu \
+apt-get install -y --reinstall fonts-ubuntu
 
 # Cinnamon packages
 apt-get install -y \
@@ -25,8 +24,13 @@ apt-get install -y \
 apt-get install -y casper live-boot live-tools ubiquity-casper mtools
 
 # system
-apt-get install -y finalrd fonts-cantarell ntfs-3g apparmor apparmor-utils \
-	libnotify-bin language-pack-gnome-es xfsprogs
+apt-get install -y \
+	finalrd \
+	fonts-cantarell \
+	libnotify-bin \
+	language-pack-gnome-es \
+	xfsprogs \
+	ntfs-3g
 
 # locales
 DEBIAN_FRONTEND=noninteractive apt-get install -y locales

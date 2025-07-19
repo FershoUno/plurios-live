@@ -13,7 +13,7 @@ apt remove --purge --autoremove -y snapd
 # ==========
 # office
 # ==========
-apt remove --purge --autoremove -y libreoffice gedit gnome-text-editor
+apt remove --purge --autoremove -y libreoffice gnome-text-editor
 
 # ==========
 # multimedia
@@ -51,10 +51,3 @@ apt remove --purge --autoremove -y \
         language-pack-pt language-pack-pt-base
 
 apt remove --purge --autoremove -y aspell-en wamerican
-
-#apt remove --no-remove -y \
-#	plymouth-theme-ubuntucinnamon-spinner
-
-#apt remove --purge --autoremove -y lp-solve 2>/dev/null
-
-#apt autoremove -y
