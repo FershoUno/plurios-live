@@ -7,6 +7,12 @@ set -e                  # exit on error
 set -o pipefail         # exit on pipeline error
 set -u                  # treat unset variable as error
 
+if [[ "$(whoami)" != "root" ]]
+then
+	echo "You need to run plurios-live as root"
+	exit 1
+fi
+
 # === variables ===
 SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
 CONF_VAR="config/variables.conf"
@@ -20,24 +26,28 @@ WORKSPACE="workspace"
 # === main ===
 
 function run(){
-  get_content_iso
+
+if [ -f $TEMPLATE_DIR/filesystem.squashfs ]; then
+echo "File: filesystem.squashfs found.."
+echo "Using Template"
+  setup_workspace
   load_filesystem
+  exec_chroot
   repack_filesystem
   build_iso
+else
+echo "File: filesystem.squashfs not found.."
+echo "Creating template"
+  get_content_iso
+  create_template_squashfs
+  load_filesystem
+  exec_chroot
+  repack_filesystem
+  build_iso
+fi
 }
 
-if [[ "$(whoami)" != "root" ]]
-then
-	echo "You need to run plurios-live as root"
-	exit 1
-fi
-
 ISO_FILE="${1:-}"
-if ! [[ -n "$ISO_FILE" && -f "$ISO_FILE" && "${ISO_FILE##*.}" == "iso" ]]; then
-    echo "Error: Use an existing file and it is in ISO format"
-    echo "Use: bash $0 ubuntucinnamon-24.04.2-desktop-amd64.iso"
-    exit 1
-fi
 
 echo "start: $(date)"
 run
