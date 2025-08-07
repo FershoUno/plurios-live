@@ -58,11 +58,11 @@ function check_compression(){
 }
 
 function extract(){
+  # use: extract [DIR_DST] [PATH_FILE]
   unsquashfs -f -d "$@"
 }
 
 function extract_content_filesystem(){
-  # use: extract [DIR_DST] [PATH_FILE]
   extract $CUSTOM_DIR "$EXTRACT_DIR/casper/minimal.squashfs"
 }
 
@@ -110,12 +110,24 @@ echo "GRUB_DISTRIBUTOR='${ID_FILE} ${CODENAME_FILE} ${RELEASE_FILE}'" > "$CUSTOM
 echo "GRUB_DISABLE_OS_PROBER=false" >> "$CUSTOM_DIR/etc/default/grub.d/osprober.cfg"
 }
 
-check_load_iso(){
-  if ! [[ -n "$ISO_FILE" && -f "$ISO_FILE" && "${ISO_FILE##*.}" == "iso" ]]; then
-    echo "Error: Use an existing file and it is in ISO format"
-    echo "Use: bash $0 ubuntucinnamon-24.04.2-desktop-amd64.iso"
+##check_load_iso(){
+#  if ! [[ -n "$ISO_FILE" && -f "$ISO_FILE" && "${ISO_FILE##*.}" == "iso" ]]; then
+#    echo "Error: Use an existing file and it is in ISO format"
+#    echo "Use: bash $0 ubuntucinnamon-24.04.2-desktop-amd64.iso"
+#    exit 1
+#fi
+#}
+
+check_load_iso() {
+  if [[ -n "$ISO_FILE" && -f "$ISO_FILE" && "${ISO_FILE##*.}" == "iso" ]]; then
+    return 0
+  elif declare -F "$ISO_FILE" > /dev/null; then
+    return 0
+  else
+    echo "Error: Provide an existing ISO file or a valid function name."
+    echo "Usage: bash $0 <your-iso-file.iso>  OR  bash $0 <function_name>"
     exit 1
-fi
+  fi
 }
 
 function copy_rsync(){
@@ -128,6 +140,10 @@ function copy_core(){
 
 function copy_plurios(){
   copy_rsync "$SCRIPT_DIR/$DIR_CONF_PLURIOS/$VARIANT_ISO/" "$CUSTOM_DIR/plurios"
+}
+
+function copy_finish(){
+  copy_rsync "$SCRIPT_DIR/$DIR_CONF_PLURIOS/finish/" "$CUSTOM_DIR/plurios"
 }
 
 function copy_prepare(){
@@ -230,10 +246,10 @@ function load_filesystem(){
 }
 
 function exec_chroot(){
-  copy_plurios
-  run_chroot
-  copy_prepare
-  run_chroot
+  for RUN in copy_plurios copy_finish copy_prepare; do
+    $RUN
+    run_chroot
+  done
 }
 
 function repack_filesystem(){

@@ -21,8 +21,6 @@ Pin-Priority: 1001
 EOF
 
 # ========================
-# Add PluriOS Repository
-# ========================
 
 # Add Thunderbird
 add-apt-repository ppa:mozillateam/ppa -y

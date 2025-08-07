@@ -13,7 +13,7 @@ apt remove --purge --autoremove -y snapd
 # ==========
 # office
 # ==========
-apt remove --purge --autoremove -y libreoffice gnome-text-editor
+apt remove --purge --autoremove -y  gnome-text-editor fonts-noto libreoffice*
 
 # ==========
 # multimedia
@@ -28,18 +28,24 @@ apt remove --purge --autoremove -y gnome-games gnome-2048 gnome-mahjongg
 # ===========
 # internet
 # ===========
-apt remove --purge --autoremove -y pidgin hexchat remmina
+apt remove --purge --autoremove -y pidgin hexchat remmina w3m
 
 # ===========
 # graphics
 # ===========
-apt remove --purge --autoremove -y imagemagick imagemagick-6.q16 eog
+apt remove --purge --autoremove -y imagemagick imagemagick-6.q16 imagemagick-6-common eog
+
+# ===========
+# system
+# ===========
+apt remove --purge --autoremove -y gnote gedit gdebi lm-sensors fakeroot
 
 # ===========
 # tools
 # ===========
-apt remove --purge --autoremove -y alacritty ufw deja-dup gnome-online-accounts-gtk
-
+apt remove --purge --autoremove -y alacritty ufw deja-dup apport \
+	dracut-install gnome-characters gnome-logs html2text inetutils-telnet inxi \
+	kerneloops neofetch vino
 
 # ===========
 # unnecessary languages

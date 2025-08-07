@@ -7,23 +7,33 @@ echo "
 "
 apt-get update
 
+# =====================
 # Grub efi signed, etc
-apt-get install -y grub-common grub-gfxpayload-lists grub-pc grub-pc-bin grub2 grub-efi-amd64-signed shim-signed \
+# =====================
+apt-get install -y grub-common grub-gfxpayload-lists grub-pc grub-pc-bin grub2 grub-efi-amd64-signed shim-signed 
 
+# =====================
 # Reinstallation
+# =====================
 apt-get install -y --reinstall fonts-ubuntu
 
+# =====================
 # Cinnamon packages
+# =====================
 apt-get install -y \
 	cinnamon \
 	cinnamon-common \
 	cinnamon-settings-daemon \
 	cinnamon-settings-daemon-dev
 
+# =====================
 # live tools
-apt-get install -y casper live-boot live-tools ubiquity-casper mtools
+# =====================
+apt-get install -y casper mtools
 
+# =====================
 # system
+# =====================
 apt-get install -y \
 	finalrd \
 	fonts-cantarell \
@@ -32,7 +42,9 @@ apt-get install -y \
 	xfsprogs \
 	ntfs-3g
 
+# =====================
 # locales
+# =====================
 DEBIAN_FRONTEND=noninteractive apt-get install -y locales
 
 ####################
@@ -40,9 +52,9 @@ DEBIAN_FRONTEND=noninteractive apt-get install -y locales
 ####################
 apt-get install -y plurios-icons 
 
-# ------------------
+# =====================
 # Calamares PluriOS
-# ------------------
+# =====================
 apt-get install -y \
 		plurios-calamares-settings \
 		plurios-plymouth-theme-spinner \
@@ -51,26 +63,49 @@ apt-get install -y \
 
 ###################
 
+# =====================
 # Internet
+# =====================
 apt-get install -y firefox firefox-l10n-es-mx thunderbird thunderbird-locale-es axel
 
+# =====================
 # Tools
+# =====================
 apt-get install -y htop terminator curl gparted planner
 
+# =====================
 # Multimedia
+# =====================
 apt-get install -y vlc eog rhythmbox
 
+# =====================
 # Office
-apt-get install -y libreoffice libreoffice-l10n-es mousepad
+# =====================
+apt-get install -y \
+	libreoffice-core \
+	libreoffice-gtk3 \
+	libreoffice-style-elementary \
+	libreoffice-writer \
+	libreoffice-calc \
+	libreoffice-math \
+	libreoffice-impress \
+	libreoffice-l10n-es
+	xournalpp
 
+# =====================
 # Graphics
-apt-get install -y flameshot xournalpp open-vm-tools open-vm-tools-desktop libvirt-glib-1.0-0
+# =====================
+apt-get install -y flameshot open-vm-tools open-vm-tools-desktop libvirt-glib-1.0-0
 
+# =====================
 # Development
+# =====================
 apt-get install -y git 
 
+# =====================
 # drawio-desktop
-cat <<EOF > /etc/apparmor.d/drawio
+# =====================
+cat <<EOF > /etc/apparmor.d/drawio 2>/dev/null
 # This profile allows everything and only exists to give the
 # application a name instead of having the label "unconfined"
 

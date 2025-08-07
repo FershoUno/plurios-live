@@ -12,7 +12,7 @@ cat <<EOF >/etc/casper.conf
 # Supported variables are:
 # USERNAME, USERFULLNAME, HOST, BUILD_SYSTEM, FLAVOUR
 
-export USERNAME="plurios"
+export USERNAME="live"
 export USERFULLNAME="Live session PluriOS"
 export HOST="plurios"
 export BUILD_SYSTEM="Ubuntu"

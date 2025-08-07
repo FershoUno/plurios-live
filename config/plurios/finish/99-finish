@@ -28,6 +28,7 @@ apt-get upgrade -y
 
 apt remove --purge --autoremove lp-solve -y 2>/dev/null
 
+apt autoremove -y
 
 update-initramfs -u
 

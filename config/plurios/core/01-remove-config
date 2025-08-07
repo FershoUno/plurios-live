@@ -43,3 +43,6 @@ EOF
 
 # remove link merged
 unlink /etc/xdg/menus/cinnamon-applications-merged 2>/dev/null
+
+# hidden nm-applet
+echo "Hidden=true" >> /etc/xdg/autostart/nm-applet.desktop
