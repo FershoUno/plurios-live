@@ -178,11 +178,14 @@ function calculate_filesystem_size(){
   du -sx --block-size=1 $IMAGE_DIR/casper/filesystem.squashfs | cut -f1 > $IMAGE_DIR/casper/filesystem.size
 }
 
-function config_disk(){
-  sed -i "s/DISC_LABEL_NAME/$DISC_LABEL_NAME/g" $IMAGE_DIR/README.diskdefines
-  find $IMAGE_DIR -type f -exec md5sum {} \; | sed "s|^$(pwd)/||" > $IMAGE_DIR/md5sum.txt
+function config_disk() {
+  sed -i "s/DISC_LABEL_NAME/$DISC_LABEL_NAME/g" "$IMAGE_DIR/README.diskdefines"
+  (
+    cd "$IMAGE_DIR" || { echo "Error: no se puede acceder a $IMAGE_DIR"; return 1; }
+    find . -type f -exec md5sum {} \; > md5sum.txt
+    sed -i 's|^\./||' md5sum.txt
+  )
 }
-
 
 function generate_iso(){
   pushd $IMAGE_DIR
