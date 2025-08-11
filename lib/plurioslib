@@ -125,7 +125,7 @@ check_load_iso() {
     return 0
   else
     echo "Error: Provide an existing ISO file or a valid function name."
-    echo "Usage: bash $0 <your-iso-file.iso>  OR  bash $0 <function_name>"
+    echo "Usage: bash $0 ubuntucinnamon-24.04.2-desktop-amd64.iso  OR  bash $0 <function_name>"
     exit 1
   fi
 }
@@ -238,6 +238,7 @@ function create_template_squashfs(){
 }
 
 function load_filesystem(){
+  clean_custom_dir
   extract_content_filesystem_template
   mount_chroot
   mount_apt

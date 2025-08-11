@@ -33,12 +33,13 @@ apt remove --purge --autoremove -y pidgin hexchat remmina w3m
 # ===========
 # graphics
 # ===========
-apt remove --purge --autoremove -y imagemagick imagemagick-6.q16 imagemagick-6-common eog
+apt remove --purge --autoremove -y imagemagick imagemagick-6.q16 imagemagick-6-common eog \
+	mate-themes
 
 # ===========
 # system
 # ===========
-apt remove --purge --autoremove -y gnote gedit gdebi lm-sensors fakeroot
+apt remove --purge --autoremove -y gnote gedit gdebi lm-sensors fakeroot untex
 
 # ===========
 # tools
