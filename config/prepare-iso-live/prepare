@@ -2,6 +2,8 @@
 
 pushd /image || exit 1
 
+mkdir -p casper
+
 cp /boot/vmlinuz-**-**-generic casper/vmlinuz
 cp /boot/initrd.img-**-**-generic casper/initrd
 
