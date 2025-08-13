@@ -66,12 +66,12 @@ apt-get install -y \
 # =====================
 # Internet
 # =====================
-apt-get install -y firefox firefox-l10n-es-mx thunderbird thunderbird-locale-es axel
+apt-get install -y firefox firefox-l10n-es-mx thunderbird thunderbird-locale-es
 
 # =====================
 # Tools
 # =====================
-apt-get install -y htop terminator curl gparted planner
+apt-get install -y htop terminator gparted planner
 
 # =====================
 # Multimedia

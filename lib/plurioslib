@@ -46,7 +46,12 @@ function copy_content_iso(){
 }
 
 function clean_custom_dir(){
-  find $CUSTOM_DIR -mindepth 1 -delete
+  find $CUSTOM_DIR -mindepth 1 -delete || continue
+}
+
+function clean_image_dir(){
+find $IMAGE_DIR -mindepth 1 -delete || continue
+
 }
 
 function check_compression(){
@@ -242,6 +247,7 @@ function create_template_squashfs(){
 
 function load_filesystem(){
   clean_custom_dir
+  clean_image_dir
   extract_content_filesystem_template
   mount_chroot
   mount_apt
