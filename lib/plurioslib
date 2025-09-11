@@ -158,12 +158,12 @@ function copy_prepare(){
 function save_template_squashfs(){
   check_compression
    mksquashfs $CUSTOM_DIR $TEMPLATE_DIR/filesystem.squashfs -comp $COMPRESSION $OPTS_COMPRESSION \
-        -e "var/cache/apt/archives/*" \
-        -e "root/*" \
-        -e "root/.*" \
-        -e "tmp/*" \
-        -e "tmp/.*" \
-        -e "swapfile"
+        -e $CUSTOM_DIR/"var/cache/apt/archives/*" \
+        -e $CUSTOM_DIR/"root/*" \
+        -e $CUSTOM_DIR/"root/.*" \
+        -e $CUSTOM_DIR/"tmp/*" \
+        -e $CUSTOM_DIR/"tmp/.*" \
+        -e $CUSTOM_DIR/"swapfile"
 }
 
 function extract_squashfs_for_template(){
