@@ -18,7 +18,7 @@ apt remove --purge --autoremove -y  gnome-text-editor fonts-noto libreoffice*
 # ==========
 # multimedia
 # ==========
-apt remove --purge --autoremove -y brasero cheese sound-juicer shotwell gthumb gnome-sound-recorder totem rhythmbox
+apt remove --purge --autoremove -y brasero cheese sound-juicer shotwell gthumb gnome-sound-recorder totem rhythmbox sonnet-plugins
 
 # ===========
 # games
@@ -33,8 +33,7 @@ apt remove --purge --autoremove -y pidgin hexchat remmina w3m
 # ===========
 # graphics
 # ===========
-apt remove --purge --autoremove -y imagemagick imagemagick-6.q16 imagemagick-6-common eog \
-	mate-themes
+apt remove --purge --autoremove -y imagemagick imagemagick-6.q16 imagemagick-6-common eog
 
 # ===========
 # system
