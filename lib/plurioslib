@@ -84,6 +84,13 @@ function compress_content_filesystem(){
 
  mksquashfs $CUSTOM_DIR $IMAGE_DIR/casper/filesystem.squashfs -comp $COMPRESSION $OPTS_COMPRESSION \
         -e "var/cache/apt/archives/*" \
+	-e "boot/initrd.img.old" \
+	-e "boot/vmlinuz.old" \
+	-e "root/." \
+	-e "root/.wget-hsts" \
+	-e "root/.cache" \
+	-e "root/.launchpadlib" \
+	-e "root/.ssh/" \
         -e "root/*" \
         -e "root/.*" \
         -e "tmp/*" \
