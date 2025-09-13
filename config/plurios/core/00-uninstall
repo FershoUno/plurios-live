@@ -39,7 +39,7 @@ apt remove --purge --autoremove -y imagemagick imagemagick-6.q16 imagemagick-6-c
 # system
 # ===========
 apt remove --purge --autoremove -y gnote gedit gdebi lm-sensors fakeroot untex bind9-dnsutils \
-	enchant-2 espeak-ng-data gir1.2-snapd-2 jq
+	enchant-2 espeak-ng-data gir1.2-snapd-2 jq grim
 
 # ===========
 # tools

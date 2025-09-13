@@ -127,3 +127,8 @@ EOF
 fc-cache -fv
 
 apt-get upgrade -y
+
+apt-get autoremove -y
+
+
+apt-get upgrade -y

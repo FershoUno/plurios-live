@@ -30,6 +30,8 @@ apt remove --purge --autoremove lp-solve -y 2>/dev/null
 
 apt autoremove -y
 
+apt-get upgrade -y
+
 update-initramfs -u
 
 # Generate filesystem.manifest
