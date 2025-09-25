@@ -16,9 +16,8 @@ The following dependencies are packages used by plurios-live for building the IS
     findutils
     rsync
     squashfs-tools
-    jq
-    curl
     wget
+    git
 
 > Note: Some dependencies may still need to be added.
 
@@ -26,7 +25,7 @@ Install the dependencies:
 
 
     apt update 
-    apt install -y coreutils xorriso findutils rsync squashfs-tools jq curl wget
+    apt install -y coreutils xorriso findutils rsync squashfs-tools wget git
 
 
 ### 2. Download plurios-live

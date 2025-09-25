@@ -16,10 +16,9 @@ Las siguientes dependencias son paquetes que utiliza plurios-live para su constr
     findutils
     rsync
     squashfs-tools
-    jq
     curl
     wget
-
+    git
 
 
 > Nota: Es posible que aún falte registrar algunas dependencias.
@@ -28,7 +27,7 @@ Instalación de las dependencias:
 
 
     apt update 
-    apt install -y coreutils xorriso findutils rsync squashfs-tools jq curl wget
+    apt install -y coreutils xorriso findutils rsync squashfs-tools wget git
 
 
 ### 2. Descargar plurios-live
@@ -55,7 +54,7 @@ Instrucciones para ejecutar:
 
 ## ¿Donde descargar?
 
-las imagenes construidas de PluriOS se encuentran publciadas en elsitio web oficial: 
+las imagenes construidas de PluriOS se encuentran publciadas en el sitio web oficial: 
 
 [https://plurios.openit.dev/](https://plurios.openit.dev/)
 
