@@ -89,7 +89,7 @@ apt-get install -y \
 	libreoffice-calc \
 	libreoffice-math \
 	libreoffice-impress \
-	libreoffice-l10n-es
+	libreoffice-l10n-es \
 	xournalpp mousepad
 
 # =====================
