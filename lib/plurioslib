@@ -50,8 +50,8 @@ function clean_custom_dir(){
 }
 
 function clean_image_dir(){
-find $IMAGE_DIR -mindepth 1 -delete || continue
-
+#find $IMAGE_DIR -mindepth 1 -delete || continue
+find $IMAGE_DIR -mindepth 1 -delete
 }
 
 function check_compression(){
@@ -83,19 +83,19 @@ function compress_content_filesystem(){
  check_compression
 
  mksquashfs $CUSTOM_DIR $IMAGE_DIR/casper/filesystem.squashfs -comp $COMPRESSION $OPTS_COMPRESSION \
-        -e "var/cache/apt/archives/*" \
-	-e "boot/initrd.img.old" \
-	-e "boot/vmlinuz.old" \
-	-e "root/." \
-	-e "root/.wget-hsts" \
-	-e "root/.cache" \
-	-e "root/.launchpadlib" \
-	-e "root/.ssh/" \
-        -e "root/*" \
-        -e "root/.*" \
-        -e "tmp/*" \
-        -e "tmp/.*" \
-        -e "swapfile"
+        -e 'var/cache/apt/archives/*' \
+	-e 'boot/initrd.img.old' \
+	-e 'boot/vmlinuz.old' \
+	-e 'root/.' \
+	-e 'root/.wget-hsts' \
+	-e 'root/.cache' \
+	-e 'root/.launchpadlib' \
+	-e 'root/.ssh/' \
+        -e 'root/*' \
+        -e 'root/.*' \
+        -e 'tmp/*' \
+        -e 'tmp/.*' \
+        -e 'swapfile'
 }
 
 function load_info_release(){
@@ -229,8 +229,13 @@ xorriso \
             "/isolinux/efiboot.img=isolinux/efiboot.img" \
             "$IMAGE_DIR"
     popd
+	generate_checksum
+}
 
-   md5sum "$ISO_DIR/$TARGET_NAME.iso" > "$ISO_DIR/$TARGET_NAME.iso.md5"
+function generate_checksum(){
+	cd $ISO_DIR
+	md5 $TARGET_NAME.iso > $TARGET_NAME.iso.md5
+	cd -
 }
 
 # ======= functions ======
