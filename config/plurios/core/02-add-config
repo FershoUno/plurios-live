@@ -1,0 +1,15 @@
+#!/bin/bash
+
+echo "
+#####################
+# run 02-add-config #
+#####################
+"
+unlink /etc/resolv.conf || continue
+
+cat <<EOF > /etc/resolv.conf
+nameserver 1.1.1.1
+nameserver 8.8.8.8
+EOF
+
+cat /etc/resolv.conf

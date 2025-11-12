@@ -50,8 +50,7 @@ function clean_custom_dir(){
 }
 
 function clean_image_dir(){
-#find $IMAGE_DIR -mindepth 1 -delete || continue
-find $IMAGE_DIR -mindepth 1 -delete
+  find $IMAGE_DIR -mindepth 1 -delete || continue
 }
 
 function check_compression(){
@@ -63,7 +62,6 @@ function check_compression(){
 }
 
 function extract(){
-  # use: extract [DIR_DST] [PATH_FILE]
   unsquashfs -f -d "$@"
 }
 
@@ -165,12 +163,12 @@ function copy_prepare(){
 function save_template_squashfs(){
   check_compression
    mksquashfs $CUSTOM_DIR $TEMPLATE_DIR/filesystem.squashfs -comp $COMPRESSION $OPTS_COMPRESSION \
-        -e $CUSTOM_DIR/"var/cache/apt/archives/*" \
-        -e $CUSTOM_DIR/"root/*" \
-        -e $CUSTOM_DIR/"root/.*" \
-        -e $CUSTOM_DIR/"tmp/*" \
-        -e $CUSTOM_DIR/"tmp/.*" \
-        -e $CUSTOM_DIR/"swapfile"
+        -e "var/cache/apt/archives/*" \
+        -e "root/*" \
+        -e "root/.*" \
+        -e "tmp/*" \
+        -e "tmp/.*" \
+        -e "swapfile"
 }
 
 function extract_squashfs_for_template(){
@@ -234,7 +232,7 @@ xorriso \
 
 function generate_checksum(){
 	cd $ISO_DIR
-	md5 $TARGET_NAME.iso > $TARGET_NAME.iso.md5
+	md5sum $TARGET_NAME.iso > $TARGET_NAME.iso.md5
 	cd -
 }
 
