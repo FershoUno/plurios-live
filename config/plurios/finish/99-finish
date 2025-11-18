@@ -21,16 +21,21 @@ systemctl disable rustdesk-link 2>/dev/null
 # generate snakeoil
 make-ssl-cert generate-default-snakeoil --force-overwrite 2>/dev/null
 
-# delete list packages
-rm -rf /var/lib/apt/lists/* 2>/dev/null
+apt remove --purge --autoremove lp-solve -y 2>/dev/null
 
 apt-get upgrade -y
 
-apt remove --purge --autoremove lp-solve -y 2>/dev/null
+apt-get full-upgrade -y
 
 apt autoremove -y
 
 apt-get upgrade -y
+
+# delete resolv.conf
+rm -f /etc/resolv.conf
+
+# delete list packages
+rm -rf /var/lib/apt/lists/* 2>/dev/null
 
 update-initramfs -u
 
