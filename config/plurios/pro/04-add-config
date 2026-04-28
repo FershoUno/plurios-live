@@ -120,6 +120,10 @@ ff02::2 ip6-allrouters
 ff02::3 ip6-allhosts
 EOF
 
+# Enable unprivileged user namespaces to allow Firefox and other applications
+# to use proper sandboxing. Required for full security features in modern browsers.
+echo "kernel.unprivileged_userns_clone=1" | tee /etc/sysctl.d/99-firefox.conf
+
 # ===================
 # udpate fonts
 # ===================

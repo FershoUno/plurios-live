@@ -10,7 +10,7 @@ apt-get update
 # =====================
 # Grub efi signed, etc
 # =====================
-apt-get install -y grub-common grub-gfxpayload-lists grub-pc grub-pc-bin grub2 grub-efi-amd64-signed shim-signed 
+apt-get install -y grub-common grub-gfxpayload-lists grub-pc grub-pc-bin grub2 grub-efi-amd64-signed shim-signed
 
 # =====================
 # Reinstallation
@@ -50,7 +50,8 @@ DEBIAN_FRONTEND=noninteractive apt-get install -y locales
 ####################
 # PluriOS Packages
 ####################
-apt-get install -y plurios-icons 
+apt-get install -y plurios-icons \
+		plurios-firefox-profiles
 
 # =====================
 # Calamares PluriOS
@@ -59,14 +60,14 @@ apt-get install -y \
 		plurios-calamares-settings \
 		plurios-plymouth-theme-spinner \
 		plurios-grub-theme-oit \
-		rustdesk		
+		rustdesk
 
 ###################
 
 # =====================
 # Internet
 # =====================
-apt-get install -y firefox firefox-l10n-es-mx thunderbird thunderbird-locale-es
+apt-get install -y firefox-esr firefox-esr-locale-es thunderbird thunderbird-locale-es
 
 # =====================
 # Tools
@@ -100,7 +101,7 @@ apt-get install -y flameshot open-vm-tools open-vm-tools-desktop libvirt-glib-1.
 # =====================
 # Development
 # =====================
-apt-get install -y git 
+apt-get install -y git
 
 # =====================
 # drawio-desktop
